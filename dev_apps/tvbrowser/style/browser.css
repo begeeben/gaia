@@ -169,25 +169,6 @@ input[type="image"] {
   background: url(images/tab-icon-pressed-closetab.png) no-repeat 50% 50% / 3rem;
 }
 
-#main-screen {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 50;
-  position: relative;
-  left: 0;
-  overflow: hidden;
-  /*
-   * Make sure this frame starts out with an identity transform so that
-   * when we apply the .address-hidden style, we aren't reframed.
-   *
-   * https://bugzilla.mozilla.org/show_bug.cgi?id=795657 will fix the
-   * underlying problem.
-   */
-  transform: translateY(0);
-  transition: transform 0.2s ease-in-out;
-}
-
 #main-screen.address-hidden {
   transform: translateY(-5rem);
 }
@@ -215,7 +196,7 @@ input[type="image"] {
   font-size: 2.8rem;
 }
 
-#toolbar-start {
+#toolbar {
   height: 5rem;
   background-color: #f9f9fb;
   position: absolute;
@@ -236,7 +217,7 @@ input[type="image"] {
   background: url('images/progress.gif') repeat-x left bottom / 100%;
 }
 
-.page-screen #toolbar-start {
+.page-screen #toolbar {
   background-image: url('./images/tabs-badge-background.png');
   background-repeat: no-repeat;
   background-position: right;
@@ -244,11 +225,11 @@ input[type="image"] {
   padding-right: 6.5rem;
 }
 
-.page-screen #toolbar-start.tab-btn-active {
+.page-screen #toolbar.tab-btn-active {
   background-image: url('./images/tab-pressed-bg.png');
 }
 
-.tabs-screen #toolbar-start {
+.tabs-screen #toolbar {
   background-image: url('./images/iconaction_back_50x50.png'),
                     url('./images/tabs-badge-background.png');
   background-repeat: no-repeat, no-repeat;
@@ -257,7 +238,7 @@ input[type="image"] {
   padding-right: 6.5rem;
 }
 
-.tabs-screen #toolbar-start.tab-btn-active {
+.tabs-screen #toolbar.tab-btn-active {
   background-image: url('./images/iconaction_back_50x50.png'),
                     url('./images/tab-pressed-bg.png');
   background-size: 5rem, auto 5rem;
@@ -265,19 +246,6 @@ input[type="image"] {
 
 .tabs-screen #frames {
   bottom: 0;
-}
-
-#url-bar {
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  border: 0.1rem solid #c1c5ce;
-  border-radius: 0.5rem;
-  height: 3.4rem;
-  margin: 0.8rem 0 0.8rem 0.5rem;
-  padding: 0 0 0 0.5rem;
-  background-color: #fff;
-  font-weight: 600;
-  width: calc(100% - 1.5rem);
 }
 
 #url-input:disabled {
@@ -377,14 +345,6 @@ input::-moz-focus-inner {
   border: 0;
 }
 
-#frames {
-  width: 100%;
-  position: absolute;
-  top: 5rem;
-  bottom: 4.5rem;
-  background: white;
-}
-
 #frames > iframe, #tab-cover {
   position: absolute;
   display: block;
@@ -395,17 +355,6 @@ input::-moz-focus-inner {
 #tab-cover {
   display: none;
   z-index: 100;
-}
-
-#awesomescreen, #crashscreen, #startscreen {
-  font-size: 1.7rem;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #fff;
-  display: none;
 }
 
 #startscreen {
@@ -484,16 +433,16 @@ input::-moz-focus-inner {
   pointer-events: none;
 }
 
-#awesomescreen {
+/*#awesomescreen {
   z-index: 60;
-}
+}*/
 
 #crashscreen {
   background-color: #4f4f4f;
   background-image: url('images/crashed-tab-background.png');
   background-size: 100% auto;
   color: #fff;
-  z-index: 59;
+  /*z-index: 59;*/
   text-align: center;
 }
 
@@ -564,15 +513,15 @@ a.recommend[role="button"]:active  {
   float: right;
 }
 
-#awesomescreen {
+/*#awesomescreen {
   z-index: 60;
-}
+}*/
 
 #screen {
   z-index: 61;
 }
 
-.awesome-screen #toolbar-start {
+.awesome-screen #toolbar {
   background-color: #ccd6df;
   padding-right: 5rem;
   background-image: none;
@@ -667,19 +616,6 @@ a.recommend[role="button"]:active  {
 #tray-toolbar button {
   width: 6rem;
   border-radius: 0;
-}
-
-#settings-button {
-  background: url('images/iconaction_settings_30x30.png') center center no-repeat;
-  background-size: 3rem auto;
-  float: right;
-  height: 5rem;
-}
-
-#settings-button:active {
-  background: url('images/iconaction_settings_30x30.png') center center no-repeat,
-              url('images/icon-pressed-bg.png') 100% no-repeat;
-  background-size: 3rem auto, auto;
 }
 
 #new-tab-button {

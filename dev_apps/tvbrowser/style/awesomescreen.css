@@ -19,9 +19,9 @@
 }
 
 nav[data-role="tabs"] {
-  display: block;
+  display: inline-block;
   background-color: #CCD6DF;
-  width: 100%;
+  width: 40%;
   height: 3.6rem;
 }
 

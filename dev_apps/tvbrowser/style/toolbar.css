@@ -1,4 +1,4 @@
-#toolbar-end {
+/*#toolbar-end {
   display: none;
   z-index: 51;
 }
@@ -28,6 +28,17 @@
 
 .start-page.page-screen #frames {
   bottom: 0;
+}*/
+
+#toolbar button {
+  width: 4rem;
+  height: 4rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background-position: 50% 0;
+  background-repeat: no-repeat;
 }
 
 #back-button {
@@ -50,27 +61,28 @@
   background-image: url("images/share.png");
 }
 
-/* This is a dirty hack to hide the bottom toolbar while
- * the keyboard is active, than device-height - 40px
- * (for status bar/mini attention screen),
- * then the keyboard is likely activated
- */
-/* For the Otoro, 320x480 */
-@media (device-height: 480px) and (max-height: 430px),
-       (device-height: 320px) and (max-height: 270px) {
-  .page-screen #toolbar-end { display: none; }
-  .page-screen #frames { bottom: 0; }
-}
-/* For the Galaxy SII, 640x480 */
-@media (device-height: 480px) and (max-height: 430px),
-       (device-height: 640px) and (max-height: 590px) {
-  .page-screen #toolbar-end { display: none; }
-  .page-screen #frames { bottom: 0; }
+#settings-button {
+  background: url('images/iconaction_settings_30x30.png') center center no-repeat;
+  /*background-size: 3rem auto;*/
+/*  float: right;
+  height: 5rem;*/
 }
 
-/* For the Twist , 960x540 */
-@media (device-height: 540px) and (max-height: 490px),
-       (device-height: 960px) and (max-height: 910px) {
-  .page-screen #toolbar-end { display: none; }
-  .page-screen #frames { bottom: 0; }
+#settings-button:active {
+  background: url('images/iconaction_settings_30x30.png') center center no-repeat,
+              url('images/icon-pressed-bg.png') 100% no-repeat;
+  /*background-size: 3rem auto, auto;*/
+}
+
+#url-bar {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  border: 0.1rem solid #c1c5ce;
+  border-radius: 0.5rem;
+  height: 3.4rem;
+  margin: 0.8rem 0 0.8rem 0.5rem;
+  padding: 0 0 0 0.5rem;
+  background-color: #fff;
+  font-weight: 600;
+  width: calc(100% - 36.5rem);
 }

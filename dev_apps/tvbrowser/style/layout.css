@@ -1,0 +1,40 @@
+.is-hidden {
+  display: none;
+}
+
+#main-screen {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  left: 0;
+  overflow: hidden;
+}
+
+#main-screen.awesomescreen #awesomescreen,
+#main-screen.crashscreen #crashscreen,
+#main-screen.frames #frames {
+  display: block;
+}
+
+#frames, #awesomescreen, #crashscreen {
+  width: 100%;
+  position: absolute;
+  top: 5rem;
+  bottom: 0;
+  background: white;
+  display: none;
+}
+
+#awesomescreen, #crashscreen {
+  font-size: 1.7rem;
+}
+
+#tab-list {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background: black;
+  opacity: 0.6;
+}
