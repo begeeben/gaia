@@ -1,9 +1,15 @@
-/* global Browser, BrowserDB, MozActivity */
 'use strict';
-/**
- * Browser app toolbar
- * @namespace Toolbar
- */
+
+(function (exports) {
+
+  var toolbar = {};
+
+  toolbar.init = function toolbar_init(mediator) {};
+
+  exports.toolbar = toolbar;
+
+})(window);
+
 var Toolbar = {
 
   /**
@@ -58,41 +64,6 @@ var Toolbar = {
       this.forwardButton.disabled = !e.target.result;
     }).bind(this);
     this.refreshBookmarkButton();
-  },
-
-  /**
-   * Handle share button clicks.
-   *
-   * @param {Event} evt Click event.
-   */
-  handleShareButtonClick: function toolbar_handleShareButtonClick(evt) {
-    if (this.shareButton.disabled) {
-      return;
-    }
-
-    this.shareButton.disabled = true;
-
-    // Fire web activity to share URL
-    var activity = new MozActivity({
-      name: 'share',
-      data: {
-        type: 'url',
-        url: Browser.currentTab.url
-      }
-    });
-
-    activity.onsuccess = (function success() {
-      this.shareButton.disabled = false;
-    }).bind(this);
-
-    activity.onerror = (function error() {
-      this.shareButton.disabled = false;
-    }).bind(this);
   }
 
 };
-
-window.addEventListener('load', function toolbarOnLoad(evt) {
-  window.removeEventListener('load', toolbarOnLoad);
-  Toolbar.init();
-});

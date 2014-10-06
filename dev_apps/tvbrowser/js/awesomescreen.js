@@ -1,8 +1,14 @@
-/* globals _, AccessibilityHelper, Browser, BrowserDB, DateHelper, HtmlHelper*/
-
-/* exported Awesomescreen */
-
 'use strict';
+
+(function (exports) {
+
+  var awesomescreen = {};
+
+  awesomescreen.init = function awesomescreen_init(mediator) {};
+
+  exports.awesomescreen = awesomescreen;
+
+})(window);
 
 /**
  * Browser App Awesomescreen. Display top sites, bookmarks, histories and search
