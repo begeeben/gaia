@@ -3,6 +3,7 @@
 (function (exports) {
 
   var awesomescreen;
+  var toolbar;
   // DOM
   var mainScreen;
 
@@ -10,7 +11,10 @@
 
   mediator.init = function mediator_init(options) {
     awesomescreen = options.awesomescreen;
+    toolbar = options.toolbar;
     mainScreen = document.getElementById('main-screen');
+
+    toolbar.init({mediator: mediator});
 
     awesomescreen.init({mediator: mediator});
     awesomescreen.showTopSites(true);
@@ -25,6 +29,8 @@
   mediator.goBack = function mediator_goBack(options) {};
 
   mediator.goForward = function mediator_goForward(options) {};
+
+  mediator.goHome = function mediator_goHome(options) {};
 
   mediator.reload = function mediator_reload(options) {};
 
@@ -65,7 +71,13 @@
 
   mediator.showCrashScreen = function mediator_showCrashScreen(options) {};
 
-  mediator.showSettings = function mediator_showSettings(options) {};
+  mediator.showSettings = function mediator_showSettings(options) {
+    document.body.classList.add('settings-screen');
+  };
+
+  mediator.hideSettings = function mediator_hideSettings() {
+    document.body.classList.remove('settings-screen');
+  };
 
   mediator.showTab = function mediator_showTab(options) {
     mainScreen.classList.remove('awesomescreen');
@@ -79,13 +91,15 @@
 
   mediator.showTab = function mediator_showTab(options) {};
 
+  mediator.showBookmarkMenu = function mediator_showBookmarkMenu(options) {};
+
   mediator.showContextMenu = function mediator_showContextMenu(options) {};
 
   mediator.zoom = function mediator_zoom(options) {};
 
   mediator.togglePointer = function mediator_togglePointer(options) {};
 
-  mediator.toggleTvScreen = function mediator_toggleTvScreen(options) {};
+  mediator.toggleTv = function mediator_toggleTv(options) {};
 
   // Data methods
 
