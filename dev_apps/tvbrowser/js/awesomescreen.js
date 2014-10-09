@@ -1,214 +1,131 @@
+/* global AccessibilityHelper */
+/* global DateHelper */
+
 'use strict';
 
 (function (exports) {
 
-  var awesomescreen = {};
+  // var _ = navigator.mozL10n.get;
 
-  awesomescreen.init = function awesomescreen_init(mediator) {};
+  var TOP_SITES_COUNT = 9;
+  var MAX_SEARCH_RESULT_COUNT = 5;
+  var DEFAULT_FAVICON = 'style/images/favicon.png';
+  var UNDERLAY = ',url(./style/images/favicon-underlay.png)';
 
-  exports.awesomescreen = awesomescreen;
+  var mediator;
 
-})(window);
+  // DOM element references
+  var tabs, tabPanels;
+  var topSitesTab, bookmarksTab, historyTab, editButton;
+  var topSitesPanel, bookmarksPanel, historyPanel;
+  var searchResultsPanel;
 
-/**
- * Browser App Awesomescreen. Display top sites, bookmarks, histories and search
- * result.
- * @namespace Awesomescreen
- */
-var Awesomescreen = {
+  var activeTab, activePanel;
 
-  DEFAULT_FAVICON: 'style/images/favicon.png',
-  TOP_SITES_COUNT: 20,
-  RESULT_CACHE_SIZE: 20,
-
-  listTemplate: null,
-  resultTemplate: null,
-  searchTemplate: null,
-  resultCache: {},
-  updateInProgress: false,
-  pendingUpdateFilter: null,
-  // Keep img object URLs to later clean up img file references
-  objectURLs: [],
-
-  /**
-   * Initialise Awesomescreen.
-   */
-  init: function awesomescreen_init() {
-    // DOM elements
-    this.cancelButton = document.getElementById('awesomescreen-cancel-button');
-    this.tabs = document.querySelectorAll('#awesomescreen [role="tab"]');
-    this.tabPanels = document.getElementById('tab-panels');
-    this.tabHeaders = document.getElementById('tab-headers');
-    this.topSitesTab = document.getElementById('top-sites-tab');
-    this.topSites = document.getElementById('top-sites');
-    this.bookmarksTab = document.getElementById('bookmarks-tab');
-    this.bookmarks = document.getElementById('bookmarks');
-    this.historyTab = document.getElementById('history-tab');
-    this.history = document.getElementById('history');
-    this.results = document.getElementById('results');
-
-    // Add event listeners
-    this.topSitesTab.addEventListener('click',
-      this.selectTopSitesTab.bind(this));
-    this.bookmarksTab.addEventListener('click',
-      this.selectBookmarksTab.bind(this));
-    this.historyTab.addEventListener('click', this.selectHistoryTab.bind(this));
-    this.cancelButton.addEventListener('click',
-      this.handleCancel.bind(this));
-    this.results.addEventListener('click', this.handleClickResult.bind(this));
-    this.tabPanels.addEventListener('click', this.handleClickResult.bind(this));
-
-    // Create template elements
-    this.resultTemplate = this.createResultTemplate();
-    this.listTemplate = this.createList();
-  },
-
-  /**
-   * Show Awesomescreen.
-   */
-  show: function awesomescreen_show() {
-    this.results.classList.add('hidden');
-    Browser.hideCurrentTab();
-    Browser.tabsBadge.innerHTML = '';
-    // Ensure the user cannot interact with the browser until the
-    // transition has ended, this will not be triggered unless the
-    // use is navigating from the tab screen.
-    var pageShown = (function() {
-      Browser.mainScreen.removeEventListener('transitionend', pageShown, true);
-      Browser.inTransition = false;
-    });
-    Browser.mainScreen.addEventListener('transitionend', pageShown, true);
-    Browser.switchScreen(Browser.AWESOME_SCREEN);
-    var buttonMode = Browser.urlInput.value === '' ? null : Browser.GO;
-    Browser.setUrlButtonMode(buttonMode);
-    this.selectTopSitesTab();
-  },
-
-  /**
-   * Handle clicks on the cancel button.
-   *
-   * @param {Event} e Click event.
-   */
-  handleCancel: function awesomescreen_handleCancel(e) {
-    if (Browser.previousScreen === Browser.PAGE_SCREEN) {
-      Browser.showPageScreen();
-    } else {
-      Browser.deleteTab(Browser.currentTab.id);
-      Browser.showTabScreen();
-    }
-    Browser.updateSecurityIcon();
-    this.clearResultCache();
-  },
-
-  /**
-   * Select Top Sites tab.
-   */
-  selectTopSitesTab: function awesomescreen_selectTopSitesTab() {
-    this.deselectTabs();
-    this.topSitesTab.classList.add('selected');
-    this.topSites.classList.add('selected');
-    AccessibilityHelper.setAriaSelected(this.topSitesTab, this.tabs);
-    BrowserDB.getTopSites(this.TOP_SITES_COUNT, null,
-      this.populateTopSites.bind(this));
-  },
-
-  /**
-   * Show the list of Top Sites.
-   *
-   * @param {Array} topSites Array of top site data.
-   */
-  populateTopSites: function awesomescreen_populateTopSites(topSites) {
-    this.topSites.innerHTML = '';
-    var list = this.listTemplate.cloneNode(true);
-    topSites.forEach(function(data) {
-      list.appendChild(this.createListItem(data));
-    }, this);
-    this.topSites.appendChild(list);
-  },
-
-  /**
-   * Select History tab.
-   */
-  selectHistoryTab: function awesomescreen_selectHistoryTab() {
-    // Do nothing if we are already in the history tab
-    if (this.historyTab.classList.contains('selected') &&
-      this.history.classList.contains('selected')) {
+  function selectTab(tab, panel) {
+    if (activeTab && activeTab === tab) {
       return;
     }
 
-    this.deselectTabs();
-    this.historyTab.classList.add('selected');
-    this.history.classList.add('selected');
-    AccessibilityHelper.setAriaSelected(this.historyTab, this.tabs);
-    BrowserDB.getHistory(this.populateHistory.bind(this));
-  },
-
-  /**
-   * Show the list of history items.
-   *
-   * @param {Array} visits An array of visit data.
-   */
-  populateHistory: function awesomescreen_populateHistory(visits) {
-    this.history.innerHTML = '';
-    var thresholds = [
-      new Date().valueOf(),              // 0. Now
-      DateHelper.todayStarted(),         // 1. Today
-      DateHelper.yesterdayStarted(),     // 2. Yesterday
-      DateHelper.thisWeekStarted(),      // 3. This week
-      DateHelper.thisMonthStarted(),     // 4. This month
-      DateHelper.lastSixMonthsStarted(), // 5. Six months
-      0                                  // 6. Epoch!
-    ];
-    var threshold = 0;
-    var month = null;
-    var year = null;
-    var urls = []; // List of URLs under each heading for de-duplication
-
-    var fragment = document.createDocumentFragment();
-    visits.forEach(function awesomescreen_processVisit(visit) {
-      var timestamp = visit.timestamp;
-      // Draw new heading if new threshold reached
-      if (timestamp > 0 && timestamp < thresholds[threshold]) {
-        urls = [];
-        threshold = this.incrementHistoryThreshold(timestamp, threshold,
-          thresholds);
-        // Special case for month headings
-        if (threshold != 5) {
-          this.drawHistoryHeading(fragment, threshold);
-        }
-      }
-      if (threshold === 5) {
-        var timestampDate = new Date(timestamp);
-        if (timestampDate.getMonth() != month ||
-          timestampDate.getFullYear() != year) {
-          urls = [];
-          month = timestampDate.getMonth();
-          year = timestampDate.getFullYear();
-          this.drawHistoryHeading(fragment, threshold, timestamp);
-        }
-      }
-      // If not a duplicate, draw list item & add to list
-      if (urls.indexOf(visit.uri) == -1) {
-        urls.push(visit.uri);
-        fragment.appendChild(this.createListItem(visit));
-      }
-    }, this);
-
-    if (fragment.childNodes.length) {
-      this.history.appendChild(fragment);
+    if (activeTab) {
+      activeTab.classList.remove('selected');
+      activePanel.classList.remove('selected');
     }
-  },
 
-  /**
-   * Draw heading to divide up history list.
-   *
-   * @param {Element} parent DOM element to append heading to.
-   * @param {number} threshold Index of the current threshold (time period).
-   * @param {number} timestamp Number of ms since epoch that page was visited.
-   */
-  drawHistoryHeading: function awesomescreen_drawHistoryHeading(parent,
-    threshold, timestamp) {
-    var LABELS = [
+    tab.classList.add('selected');
+    panel.classList.add('selected');
+    activeTab = tab;
+    activePanel = panel;
+    AccessibilityHelper.setAriaSelected(tab, tabs);
+  }
+
+  var topSitesCache, bookmarksCache, historyCache;
+
+  var topSiteListTemplate, topSiteListItemTemplate;
+  var bookmarkListTemplate, bookmarkListItemTemplate;
+  var historyDateHeaderTemplate;
+
+  // use it temporarily
+  // compare the performance with innerHTML later
+  function initTemplates() {
+    topSiteListTemplate = document.createElement('ul');
+    topSiteListTemplate.setAttribute('id', 'top-site-list');
+    topSiteListTemplate.setAttribute('role', 'listbox');
+
+    topSiteListItemTemplate = document.createElement('li');
+    topSiteListItemTemplate.setAttribute('class', 'top-site-item');
+    topSiteListItemTemplate.appendChild(document.createElement('a'));
+    topSiteListItemTemplate.appendChild(document.createElement('span'));
+
+    bookmarkListTemplate = document.createElement('ul');
+    bookmarkListTemplate.setAttribute('id', 'bookmark-list');
+    bookmarkListTemplate.setAttribute('role', 'listbox');
+
+    bookmarkListItemTemplate = document.createElement('li');
+    // bookmarkListItemTemplate.setAttribute('class', 'top-site-item');
+    bookmarkListItemTemplate.setAttribute('role', 'listitem');
+
+    var bookmarkLink = document.createElement('a');
+    bookmarkLink.appendChild(document.createElement('h5'));
+    bookmarkLink.appendChild(document.createElement('small'));
+    bookmarkListItemTemplate.appendChild(bookmarkLink);
+
+    historyDateHeaderTemplate = document.createElement('h3');
+  }
+
+  function createTopSiteItem(topSite) {
+    var listItem = topSiteListItemTemplate.cloneNode(true);
+    var link = listItem.querySelector('a');
+    link.href = topSite.uri;
+    link.style.backgroundImage = topSite.screenshotUrl ?
+      'url(' + topSite.screenshotUrl + ')': '';
+    listItem.querySelector('span').textContent = topSite.title;
+    return listItem;
+  }
+
+  // should only update changed top sites, revise it later
+  function updateTopSitesPanel(topSites) {
+    var list = topSiteListTemplate.cloneNode();
+
+    topSites.forEach(function(topSite) {
+      list.appendChild(createTopSiteItem(topSite));
+    });
+
+    topSitesPanel.replaceChild(list, topSitesPanel.firstChild);
+  }
+
+  function createBookmarkItem(bookmark) {
+    var listItem = bookmarkListItemTemplate.cloneNode(true);
+    var link = listItem.querySelector('a');
+    link.href = bookmark.uri;
+    link.style.backgroundImage = bookmark.iconUri ?
+      'url(' + bookmark.iconUri + ')' + UNDERLAY :
+      'url(' + DEFAULT_FAVICON + ')' + UNDERLAY;
+    listItem.querySelector('h5').innerHTML = bookmark.title;
+    listItem.querySelector('small').innerHTML = bookmark.uri;
+    return listItem;
+  }
+
+  function updateBookmarksPanel(bookmarks) {
+    var list = bookmarkListTemplate.cloneNode();
+
+    bookmarks.forEach(function(bookmark) {
+      list.appendChild(createBookmarkItem(bookmark));
+    });
+
+    bookmarksPanel.replaceChild(list, bookmarksPanel.firstChild);
+  }
+
+  function incrementHistoryThreshold(timestamp, currentThreshold, thresholds) {
+    var newThreshold = currentThreshold += 1;
+    while (timestamp < thresholds[newThreshold]) {
+      newThreshold += 1;
+    }
+    return newThreshold;
+  }
+
+  function createHistoryDateHeader(threshold, timestamp) {
+    var labels = [
       'future',
       'today',
       'yesterday',
@@ -229,83 +146,229 @@ var Awesomescreen = {
         text += ' ' + date.getFullYear();
       }
     } else {
-      text = _(LABELS[threshold]);
+      text = _(labels[threshold]);
     }
 
     var h3 = document.createElement('h3');
-    var textNode = document.createTextNode(text);
-    var ul = this.listTemplate.cloneNode(true);
-    h3.appendChild(textNode);
-    parent.appendChild(h3);
-    parent.appendChild(ul);
-  },
+    h3.textContent = text;
 
-  /**
-   * Increment the history threshold (the next time period).
-   *
-   * @param {number} timestamp Timestamp of current visit being processed.
-   * @param {number} currentThreshold Index of the current threshold.
-   * @param {Array} thresholds The list of thresholds.
-   * @return {number} New threshold (time period index).
-   */
-  incrementHistoryThreshold: function awesomescreen_incrementHistoryThreshold(
-    timestamp, currentThreshold, thresholds) {
-    var newThreshold = currentThreshold += 1;
-    if (timestamp < thresholds[newThreshold]) {
-      return awesomescreen_incrementHistoryThreshold(timestamp, newThreshold,
-        thresholds);
+    return h3;
+  }
+
+  // use the same template as bookmarks
+  // assume sites are ordered by date descending
+  function updateHistoryPanel(sites) {
+    var fragment = document.createDocumentFragment();
+    var list = bookmarkListTemplate.cloneNode();
+    var dateHeader;
+
+    var thresholds = [
+      new Date().valueOf(),              // 0. Now
+      DateHelper.todayStarted(),         // 1. Today
+      DateHelper.yesterdayStarted(),     // 2. Yesterday
+      DateHelper.thisWeekStarted(),      // 3. This week
+      DateHelper.thisMonthStarted(),     // 4. This month
+      DateHelper.lastSixMonthsStarted(), // 5. Six months
+      0                                  // 6. Epoch!
+    ];
+    var threshold = 0;
+    var timestamp;
+    var month;
+    var year;
+
+    sites.forEach(function(site) {
+      timestamp = site.timestamp;
+      dateHeader = null;
+
+      // Draw new heading if new threshold reached
+      if (timestamp > 0 && timestamp < thresholds[threshold]) {
+        threshold = incrementHistoryThreshold(timestamp, threshold, thresholds);
+        // Special case for month headings
+        if (threshold != 5) {
+          fragment.appendChild(createHistoryDateHeader(threshold, timestamp));
+        }
+      }
+
+      if (threshold === 5) {
+        var timestampDate = new Date(timestamp);
+        if (timestampDate.getMonth() != month ||
+          timestampDate.getFullYear() != year) {
+          month = timestampDate.getMonth();
+          year = timestampDate.getFullYear();
+          fragment.appendChild(createHistoryDateHeader(threshold, timestamp));
+        }
+      }
+
+      if (dateHeader) {
+        if (list.childNodes.length) {
+          fragment.appendChild(list);
+          list = bookmarkListTemplate.cloneNode();
+        }
+        fragment.appendChild(dateHeader);
+      }
+
+      list.appendChild(createBookmarkItem(site));
+    });
+
+    if (list.childNodes.length) {
+      fragment.appendChild(list);
     }
-    return newThreshold;
-  },
 
-  /**
-   * Select the Bookmarks tab.
-   */
-  selectBookmarksTab: function awesomescreen_selectBookmarksTab() {
-    // Do nothing if we are already in the bookmarks tab
-    if (this.bookmarksTab.classList.contains('selected') &&
-      this.bookmarks.classList.contains('selected')) {
-      return;
+    while (historyPanel.firstChild) {
+      historyPanel.removeChild(historyPanel.firstChild);
     }
+    historyPanel.appendChild(fragment);
+  }
 
-    this.deselectTabs();
-    this.bookmarksTab.classList.add('selected');
-    this.bookmarks.classList.add('selected');
-    AccessibilityHelper.setAriaSelected(this.bookmarksTab, this.tabs);
-    BrowserDB.getBookmarks(this.populateBookmarks.bind(this));
+  function updateSearchResultsPanel(sites) {
+    var list = bookmarkListTemplate.cloneNode();
+
+    sites.forEach(function(site) {
+      list.appendChild(createBookmarkItem(site));
+    });
+
+    searchResultsPanel.replaceChild(list, searchResultsPanel.firstChild);
+  }
+
+  var awesomescreen = {};
+
+  awesomescreen.init = function awesomescreen_init(options) {
+    mediator = options.mediator;
+
+    // Get DOM element references
+    tabs = document.querySelectorAll('#awesomescreen [role="tab"]');
+    tabPanels = document.getElementById('tab-panels');
+    topSitesTab = document.getElementById('top-sites-tab');
+    topSitesPanel = document.getElementById('top-sites-panel');
+    bookmarksTab = document.getElementById('bookmarks-tab');
+    bookmarksPanel = document.getElementById('bookmarks-panel');
+    historyTab = document.getElementById('history-tab');
+    historyPanel = document.getElementById('history-panel');
+    searchResultsPanel = document.getElementById('search-results-panel');
+
+    // Init event listeners
+    topSitesTab.addEventListener('click', awesomescreen.showTopSites);
+    bookmarksTab.addEventListener('click', awesomescreen.showBookmarks);
+    historyTab.addEventListener('click', awesomescreen.showHistory);
+
+    initTemplates();
+  };
+
+  // awesomescreen.show = function awesomescreen_show(options) {
+  //   awesomescreen.showTopSites();
+  // };
+
+  awesomescreen.showTopSites = function awesomescreen_showTopSites(focus) {
+    selectTab(topSitesTab, topSitesPanel);
+    mediator.getTopSites(TOP_SITES_COUNT)
+      .then(updateTopSitesPanel)
+      .then(function () {
+        if (focus) {
+          // focus on the 1st top site
+        }
+      });
+  };
+
+  awesomescreen.showBookmarks = function awesomescreen_showBookmarks() {
+    selectTab(bookmarksTab, bookmarksPanel);
+    mediator.getBookmarks().then(updateBookmarksPanel);
+  };
+
+  awesomescreen.showHistory = function awesomescreen_showHistory() {
+    selectTab(historyTab, historyPanel);
+    mediator.getHistory().then(updateHistoryPanel);
+  };
+
+  awesomescreen.showSearchResults =
+  function awesomescreen_showSearchResults(sites) {
+    updateSearchResultsPanel(sites);
+    searchResultsPanel.classList.remove('hidden');
+  };
+
+  awesomescreen.hideSearchResults =
+  function awesomescreen_hideSearchResults() {
+    searchResultsPanel.classList.add('hidden');
+  };
+
+  awesomescreen.reset = function awesomescreen_reset() {
+    // remove event listeners
+    // clear unused variables
+  };
+
+  exports.awesomescreen = awesomescreen;
+
+})(window);
+
+/**
+ * Browser App Awesomescreen. Display top sites, bookmarks, histories and search
+ * result.
+ * @namespace Awesomescreen
+ */
+var Awesomescreen = {
+
+  RESULT_CACHE_SIZE: 20,
+
+  listTemplate: null,
+  resultTemplate: null,
+  searchTemplate: null,
+  resultCache: {},
+  updateInProgress: false,
+  pendingUpdateFilter: null,
+  // Keep img object URLs to later clean up img file references
+  objectURLs: [],
+
+  /**
+   * Initialise Awesomescreen.
+   */
+  init: function awesomescreen_init() {
+    // DOM elements
+    this.cancelButton = document.getElementById('awesomescreen-cancel-button');
+    // this.tabs = document.querySelectorAll('#awesomescreen [role="tab"]');
+    // this.tabPanels = document.getElementById('tab-panels');
+    // this.tabHeaders = document.getElementById('tab-headers');
+    // this.topSitesTab = document.getElementById('top-sites-tab');
+    // this.topSites = document.getElementById('top-sites');
+    // this.bookmarksTab = document.getElementById('bookmarks-tab');
+    // this.bookmarks = document.getElementById('bookmarks');
+    // this.historyTab = document.getElementById('history-tab');
+    // this.history = document.getElementById('history');
+    this.results = document.getElementById('results');
+
+    // Add event listeners
+    // this.topSitesTab.addEventListener('click',
+    //   this.selectTopSitesTab.bind(this));
+    // this.bookmarksTab.addEventListener('click',
+    //   this.selectBookmarksTab.bind(this));
+    // this.historyTab.addEventListener('click', this.selectHistoryTab.bind(this));
+    // this.cancelButton.addEventListener('click',
+    //   this.handleCancel.bind(this));
+    // this.results.addEventListener('click', this.handleClickResult.bind(this));
+    // this.tabPanels.addEventListener('click', this.handleClickResult.bind(this));
+
+    // Create template elements
+    this.resultTemplate = this.createResultTemplate();
+    // this.listTemplate = this.createList();
   },
 
   /**
-   * Show the list of bookmarks.
-   *
-   * @param {Array} bookmarks List of bookmark data objects.
+   * Show Awesomescreen.
    */
-  populateBookmarks: function awesomescreen_populateBookmarks(bookmarks) {
-    this.bookmarks.innerHTML = '';
-    var list = this.listTemplate.cloneNode(true);
-    bookmarks.forEach(function(data) {
-      list.appendChild(this.createListItem(data, null, 'bookmarks'));
-    }, this);
-    this.bookmarks.appendChild(list);
-  },
-
-  /**
-   * Refresh the list of bookmarks.
-   */
-  refreshBookmarks: function awesomescreen_refreshBookmarks() {
-    BrowserDB.getBookmarks(this.populateBookmarks.bind(this));
-  },
-
-  /**
-   * Deselect all the Awesomescreen tabs.
-   */
-  deselectTabs: function awesomescreen_deselectTabs() {
-    this.topSites.classList.remove('selected');
-    this.topSitesTab.classList.remove('selected');
-    this.bookmarks.classList.remove('selected');
-    this.bookmarksTab.classList.remove('selected');
-    this.history.classList.remove('selected');
-    this.historyTab.classList.remove('selected');
+  show: function awesomescreen_show() {
+    this.results.classList.add('hidden');
+    // Browser.hideCurrentTab();
+    // Browser.tabsBadge.innerHTML = '';
+    // Ensure the user cannot interact with the browser until the
+    // transition has ended, this will not be triggered unless the
+    // use is navigating from the tab screen.
+    // var pageShown = (function() {
+    //   Browser.mainScreen.removeEventListener('transitionend', pageShown, true);
+    //   Browser.inTransition = false;
+    // });
+    // Browser.mainScreen.addEventListener('transitionend', pageShown, true);
+    // Browser.switchScreen(Browser.AWESOME_SCREEN);
+    var buttonMode = Browser.urlInput.value === '' ? null : Browser.GO;
+    Browser.setUrlButtonMode(buttonMode);
+    // this.selectTopSitesTab();
   },
 
   /**
@@ -375,17 +438,6 @@ var Awesomescreen = {
       var item = this.createListItem(data, null, 'search');
       this.results.firstElementChild.appendChild(item);
     }
-  },
-
-  /**
-   * Create a list element to contain results.
-   *
-   * @return {Element} An unordered list element.
-   */
-  createList: function awesomescreen_createList() {
-    var list = document.createElement('ul');
-    list.setAttribute('role', 'listbox');
-    return list;
   },
 
   /**
