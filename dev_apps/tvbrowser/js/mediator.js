@@ -89,8 +89,6 @@
 
   mediator.removeTab = function mediator_removeTab(options) {};
 
-  mediator.showTab = function mediator_showTab(options) {};
-
   mediator.showBookmarkMenu = function mediator_showBookmarkMenu(options) {};
 
   mediator.showContextMenu = function mediator_showContextMenu(options) {};
