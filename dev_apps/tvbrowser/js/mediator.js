@@ -4,6 +4,9 @@
 
   var awesomescreen;
   var toolbar;
+  var tabManager;
+  var tabsView;
+
   // DOM
   var mainScreen;
 
@@ -12,6 +15,9 @@
   mediator.init = function mediator_init(options) {
     awesomescreen = options.awesomescreen;
     toolbar = options.toolbar;
+    tabManager = options.tabManager;
+    tabsView = options.tabsView;
+
     mainScreen = document.getElementById('main-screen');
 
     toolbar.init({mediator: mediator});
@@ -20,19 +26,40 @@
     awesomescreen.showTopSites(true);
     // awesomescreen.showSearchResults();
 
+    tabManager.init({mediator: mediator});
+    tabsView.init({mediator: mediator});
   };
 
   // Navigation methods
+  mediator.navigate = function mediator_navigate(value) {
+    tabManager.navigate(value);
+  };
 
-  mediator.goToUrl = function mediator_goToUrl(options) {};
+  mediator.goToUrl = function mediator_goToUrl(url) {
+    tabManager.goToUrl(url);
+    mediator.showFrames();
+  };
 
-  mediator.goBack = function mediator_goBack(options) {};
+  mediator.goBack = function mediator_goBack() {
+    tabManager.goBack();
+  };
 
-  mediator.goForward = function mediator_goForward(options) {};
+  mediator.goForward = function mediator_goForward() {
+    tabManager.goForward();
+  };
 
-  mediator.goHome = function mediator_goHome(options) {};
+  mediator.goHome = function mediator_goHome() {
+    // get homepage url from db
+    var url;
 
-  mediator.reload = function mediator_reload(options) {};
+    url = 'http://tw.yahoo.com';
+
+    tabManager.goToUrl(url);
+  };
+
+  mediator.reload = function mediator_reload() {
+    tabManager.reload();
+  };
 
   // UI methods
 
@@ -83,9 +110,20 @@
     mainScreen.classList.remove('awesomescreen');
   };
 
-  mediator.showTabsView = function mediator_showTabsView(options) {};
+  mediator.showTabsView = function mediator_showTabsView(options) {
+    tabsView.show(options);
+  };
 
-  mediator.addTab = function mediator_addTab(options) {};
+  mediator.addTab = function mediator_addTab(url) {
+    tabManager.addTab(url);
+
+    // hide tabs view and display web page
+    if (url) {
+      mediator.showFrames();
+    } else {
+      mediator.showAwesomescreen();
+    }
+  };
 
   mediator.removeTab = function mediator_removeTab(options) {};
 

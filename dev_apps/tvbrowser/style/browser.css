@@ -82,7 +82,7 @@ input[type="image"] {
   background-size: auto 5rem;
 }
 
-#new-tab {
+/*#new-tab {
   height: 3rem;
   margin: 1.8rem;
   border: 0;
@@ -91,7 +91,7 @@ input[type="image"] {
   font-size: 1.7rem;
   padding: 0.5rem;
   cursor: pointer;
-}
+}*/
 
 #tabs-list {
   border-top: 0.1rem solid #333;

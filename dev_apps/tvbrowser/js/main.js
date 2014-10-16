@@ -11,6 +11,8 @@
       awesomescreen: window.awesomescreen,
       toolbar: window.toolbar,
       settings: window.settings,
+      tabManager: window.tabManager,
+      tabsView: window.tabsView
     });
   });
 
