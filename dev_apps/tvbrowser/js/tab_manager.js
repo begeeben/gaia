@@ -12,7 +12,7 @@
   function getMozBrowserEventHandler (tab) {
     // browser event handler
     return function onMozBrowserEvents (e) {
-      console.log(e);
+      // console.log(e);
       switch (e.type) {
 
       case 'mozbrowserloadstart':
@@ -275,9 +275,7 @@
 
   tabManager.removeTab = function tabManager_removeTab(index) {
     if (tabs.length > index) {
-      if (index === tabIndex) {
-        tabManager.selectTab(index > 0 ? index -1 : 0);
-      }
+      tabManager.selectTab(index > 0 ? index -1 : 0);
       var tab = tabs.splice(index, 1)[0];
       framesElement.removeChild(tab.dom);
       mediator.updateTabsCount(tabs.length);
@@ -288,10 +286,13 @@
   };
 
   tabManager.selectTab = function tabManager_selectTab(index) {
+    console.log('tabIndex ' + tabIndex);
     console.log('select ' + index);
     if (tabs[index]) {
-      tabs[tabIndex].dom.style.display = 'none';
-      tabs[tabIndex].dom.setVisible(false);
+      if (tabs[tabIndex]) {
+        tabs[tabIndex].dom.style.display = 'none';
+        tabs[tabIndex].dom.setVisible(false);
+      }
       tabIndex = index;
       tabs[tabIndex].dom.style.display = 'block';
       tabs[tabIndex].dom.setVisible(true);
