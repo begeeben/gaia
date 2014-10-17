@@ -1,21 +1,24 @@
 #tabs-view.tab-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: space-around;
   background: black;
   opacity: 0.9;
 }
-
 .tab-list .tab-item {
-	display: inline-block;
-	width: 30rem;
-	height: 30rem;
-	font-size: 2rem;
-	color: white;
+  display: inline-block;
+  width: 30rem;
+  height: 30rem;
+  font-size: 2rem;
+  color: white;
 }
-
-.tab-list .tab-item a,
-.tab-list .tab-item .new-tab {
-	display: block;
-	width: 25rem;
-	height: 25rem;
-	background-color: rgba(255, 255, 255, 0.3);
-	background-size: cover;
+.tab-list .tab-item a, .tab-list .tab-item .new-tab {
+  display: block;
+  width: 25rem;
+  /*height: 25rem;*/
+  background-color: rgba(255, 255, 255, 0.3);
+  background-size: cover;
 }

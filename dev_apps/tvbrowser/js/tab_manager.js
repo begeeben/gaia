@@ -1,9 +1,8 @@
 /* global UrlHelper */
+/* global MAX_TAB_COUNT */
 'use strict';
 
 (function (exports) {
-
-  var MAX_TAB_COUNT = 8;
 
   var mediator;
 
@@ -199,7 +198,7 @@
     }
 
     iframe.setAttribute('id', 'tab_' + tabs.length);
-    iframe.setAttribute('mozasyncpanzoom', true);
+    // iframe.setAttribute('mozasyncpanzoom', true);
     // FIXME: content shouldn't control this directly
     iframe.setAttribute('remote', 'true');
 
@@ -276,9 +275,15 @@
 
   tabManager.removeTab = function tabManager_removeTab(index) {
     if (tabs.length > index) {
-      tabs.splice(index, 1);
-      tabManager.selectTab(index > 0 ? index -1 : 0);
+      if (index === tabIndex) {
+        tabManager.selectTab(index > 0 ? index -1 : 0);
+      }
+      var tab = tabs.splice(index, 1)[0];
+      framesElement.removeChild(tab.dom);
       mediator.updateTabsCount(tabs.length);
+      if (tabs.length === 0) {
+        mediator.addTab();
+      }
     }
   };
 
@@ -329,6 +334,10 @@
 
   tabManager.getCurrentTab = function tabManager_getCurrentTab() {
     return tabs[tabIndex];
+  };
+
+  tabManager.getTabs = function tabManager_getTabs() {
+    return tabs;
   };
 
   exports.tabManager = tabManager;

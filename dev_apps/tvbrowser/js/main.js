@@ -1,5 +1,8 @@
+/* exported MAX_TAB_COUNT */
 
 'use strict';
+
+var MAX_TAB_COUNT = 8;
 
 (function () {
 
