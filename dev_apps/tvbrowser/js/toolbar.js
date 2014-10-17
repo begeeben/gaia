@@ -18,12 +18,14 @@
   var homeButton, tvButton, pointerButton;
   var tabsButton, settingsButton;
 
+  // current url button mode
   var urlButtonMode;
   // url button states
   var urlButtonModes = {
-    GO: 0,
-    STOP: 1,
-    REFRESH: 2
+    CLEAR: 'clear',
+    GO: 'go',
+    STOP: 'stop',
+    REFRESH: 'refresh'
   };
 
   // button states
@@ -58,6 +60,7 @@
       case urlButtonModes.REFRESH:
         urlButton.style.backgroundImage = 'url(style/images/refresh.png)';
         break;
+      case urlButtonModes.CLEAR:
       case urlButtonModes.STOP:
         urlButton.style.backgroundImage = 'url(style/images/stop.png)';
         break;
@@ -95,9 +98,17 @@
 
     getElements();
 
-    urlBar.addEventListener('submit', mediator.showAwesomescreen);
-    // urlInput.addEventListener('click', mediator.showAwesomescreen);
-    urlInput.addEventListener('focus', mediator.showAwesomescreen);
+    urlBar.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      mediator.navigate(urlInput.value);
+    });
+    urlInput.addEventListener('focus', function () {
+      if (urlInput.value.trim()) {
+        mediator.updateUrlBar(mediator.getCurrentUrl());
+      }
+      mediator.showAwesomescreen();
+    });
     // urlInput.addEventListener('blur', urlBlur);
     // urlInput.addEventListener('touchend', urlTouchEnd);
     urlInput.addEventListener('input', function () {
@@ -106,7 +117,7 @@
         return;
       }
 
-      setUrlButtonMode(urlButtonModes.STOP);
+      setUrlButtonMode(urlButtonModes.CLEAR);
 
       if (urlInput.value.trim()) {
         mediator.showSearchResults(urlInput.value);
@@ -114,9 +125,24 @@
         mediator.hideSearchResults();
       }
     });
-    // urlButton.addEventListener('click', handleUrlFormSubmit);
+    urlButton.addEventListener('click', function (e) {
+      e.preventDefault();
 
-    closeButton.addEventListener('click', mediator.showTab);
+      switch (urlButtonMode) {
+      case urlButtonModes.CLEAR:
+        urlInput.value = '';
+        urlInput.focus();
+        mediator.hideSearchResults();
+        break;
+      }
+    });
+
+    closeButton.addEventListener('click', function () {
+      if (urlInput.value.trim()) {
+        mediator.updateUrlBar(mediator.getCurrentTitle());
+      }
+      mediator.showFrames();
+    });
 
     backButton.addEventListener('click', mediator.goBack);
     forwardButton.addEventListener('click', mediator.goForward);
@@ -127,8 +153,6 @@
     pointerButton.addEventListener('click', mediator.togglePointer);
     tabsButton.addEventListener('click', mediator.showTabsView);
     settingsButton.addEventListener('click', mediator.showSettings);
-
-    // toolbar.showAwesomescreenMode();
   };
 
   toolbar.show = function toolbar_show() {
@@ -138,6 +162,8 @@
   toolbar.hide = function toolbar_hide() {
 
   };
+
+  toolbar.setUrlButtonMode = setUrlButtonMode;
 
   toolbar.refreshButtons = function toolbar_refreshButtons(states) {
     var keys = Object.keys(states);
@@ -164,6 +190,18 @@
         }
       }
     }
+  };
+
+  toolbar.updateUrlBar = function toolbar_updateUrlBar(value) {
+    urlInput.value = value || '';
+  };
+
+  toolbar.updateSecurityIcon = function toolbar_updateSecurityIcon(state) {
+    sslIndicator.value = state;
+  };
+
+  toolbar.updateTabsCount = function toolbar_updateTabsCount(num) {
+
   };
 
   exports.toolbar = toolbar;

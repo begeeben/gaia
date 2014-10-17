@@ -15,6 +15,7 @@
   var mediator;
 
   // DOM element references
+  // var awesomescreenElement;
   var tabs, tabPanels;
   var topSitesTab, bookmarksTab, historyTab, editButton;
   var topSitesPanel, bookmarksPanel, historyPanel;
@@ -230,12 +231,22 @@
     searchResultsPanel.replaceChild(list, searchResultsPanel.firstChild);
   }
 
+  function onLinkClick (e) {
+    e.preventDefault();
+
+    if (e.target.nodeName === 'A') {
+      mediator.updateUrlBar(e.target.getAttribute('href'));
+      mediator.goToUrl(e.target.getAttribute('href'));
+    }
+  }
+
   var awesomescreen = {};
 
   awesomescreen.init = function awesomescreen_init(options) {
     mediator = options.mediator;
 
     // Get DOM element references
+    // awesomescreenElement = document.getElementById('awesomescreen');
     tabs = document.querySelectorAll('#awesomescreen [role="tab"]');
     tabPanels = document.getElementById('tab-panels');
     topSitesTab = document.getElementById('top-sites-tab');
@@ -250,6 +261,8 @@
     topSitesTab.addEventListener('click', awesomescreen.showTopSites);
     bookmarksTab.addEventListener('click', awesomescreen.showBookmarks);
     historyTab.addEventListener('click', awesomescreen.showHistory);
+    tabPanels.addEventListener('click', onLinkClick);
+    searchResultsPanel.addEventListener('click', onLinkClick);
 
     initTemplates();
   };

@@ -11,12 +11,11 @@
 /* global UrlHelper */
 /* global Toolbar */
 /* global MozActivity */
-/* global NfcURI */
 
 /**
  * Alias of navigator.mozL10n.get
  */
-var _ = navigator.mozL10n.get;
+// var _ = navigator.mozL10n.get;
 
 /**
  * @namespace Browser
@@ -92,21 +91,21 @@ var Browser = {
   init: function browser_init() {
     this.getAllElements();
     // Add event listeners
-    this.urlBar.addEventListener('submit', this.handleUrlFormSubmit.bind(this));
-    this.urlInput.addEventListener('focus', this.urlFocus.bind(this));
-    this.urlInput.addEventListener('blur', this.urlBlur.bind(this));
-    this.urlInput.addEventListener('touchend', this.urlTouchEnd.bind(this));
-    this.urlInput.addEventListener('input',
-      this.handleUrlInputKeypress.bind(this));
-    this.urlButton.addEventListener('click',
-      this.handleUrlFormSubmit.bind(this));
+    // this.urlBar.addEventListener('submit', this.handleUrlFormSubmit.bind(this));
+    // this.urlInput.addEventListener('focus', this.urlFocus.bind(this));
+    // this.urlInput.addEventListener('blur', this.urlBlur.bind(this));
+    // this.urlInput.addEventListener('touchend', this.urlTouchEnd.bind(this));
+    // this.urlInput.addEventListener('input',
+    //   this.handleUrlInputKeypress.bind(this));
+    // this.urlButton.addEventListener('click',
+    //   this.handleUrlFormSubmit.bind(this));
     this.tabsBadge.addEventListener('click',
       this.handleTabsBadgeClicked.bind(this));
 
     this.addTabBtnActive();
 
     // Hack to make integration tests pass, see bug 912150
-    this.urlInput.addEventListener('click', this.urlFocus.bind(this));
+    // this.urlInput.addEventListener('click', this.urlFocus.bind(this));
 
     BrowserDB.init((function() {
       this.selectTab(this.createTab());
@@ -904,21 +903,6 @@ var Browser = {
   },
 
   /**
-   * Go back.
-   */
-  goBack: function browser_goBack() {
-    // tab.dom is the iframe of the tab
-    this.currentTab.dom.goBack();
-  },
-
-  /**
-   * Go forward.
-   */
-  goForward: function browser_goForward() {
-    this.currentTab.dom.goForward();
-  },
-
-  /**
    * Click event listener of the bookmark menu add button.
    * Add a bookmark using BrowserDB.
    * @param {Event} e
@@ -1601,26 +1585,6 @@ var Browser = {
   },
 
   /**
-   * Show start screen.
-   * Get top sites from BrowserDB.
-   * Show tope site thumbnails.
-   * Load remaining DOM elements and js files.
-   * Remove Toolbar bookmark button 'bookmarked' class.
-   * Stop listening for NFC connections.
-   */
-  showStartscreen: function browser_showStartscreen() {
-    document.body.classList.add('start-page');
-    this.startscreen.classList.remove('hidden');
-    BrowserDB.getTopSites(this.MAX_TOP_SITES, null,
-      function(places) {
-      this.showTopSiteThumbnails(places);
-      this.loadRemaining();
-    }.bind(this));
-    Toolbar.bookmarkButton.classList.remove('bookmarked');
-    NfcURI.stopListening();
-  },
-
-  /**
    * Array of top site URLs.
    */
   _topSiteThumbnailObjectURLs: [],
@@ -1637,20 +1601,6 @@ var Browser = {
       URL.revokeObjectURL(url);
     });
     this._topSiteThumbnailObjectURLs = [];
-  },
-
-  /**
-   * Hide start screen.
-   * Remove 'start-page' class from body.
-   * Add 'hidden' class to startscreen.
-   * Clear top site thumbnails.
-   * Start listening fro NFC connections.
-   */
-  hideStartscreen: function browser_hideStartScreen() {
-    document.body.classList.remove('start-page');
-    this.startscreen.classList.add('hidden');
-    this.clearTopSiteThumbnails();
-    NfcURI.startListening();
   },
 
   /**
@@ -2062,10 +2012,10 @@ var Browser = {
 /**
  * Run Browser.init on window load.
  */
-window.addEventListener('load', function browserOnLoad(evt) {
-  window.removeEventListener('load', browserOnLoad);
-  Browser.init();
-});
+// window.addEventListener('load', function browserOnLoad(evt) {
+//   window.removeEventListener('load', browserOnLoad);
+//   Browser.init();
+// });
 
 /**
  * Callback of mozSetMessageHandler.

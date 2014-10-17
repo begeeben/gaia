@@ -4,6 +4,29 @@
 
 'use strict';
 
+(function (exports) {
+
+  var mediator;
+
+  var settingsDoneButton, clearHistoryButton, clearPrivateDataButton;
+
+  var settings = {};
+
+  settings.init = function (options) {
+    mediator = options.mediator;
+
+    settingsDoneButton = document.getElementById('settings-done-button');
+    clearHistoryButton = document.getElementById('clear-history-button');
+    clearPrivateDataButton =
+      document.getElementById('clear-private-data-button');
+
+    settingsDoneButton.addEventListener('click', mediator.hideSettings);
+  };
+
+  exports.settings = settings;
+
+})(window);
+
 /**
  * Browser app settings panel.
  * @namespace Settings
@@ -15,10 +38,10 @@ var Settings = {
    * Intialise settings panel.
    */
   init: function settings_init() {
-    this.settingsDoneButton = document.getElementById('settings-done-button');
-    this.clearHistoryButton = document.getElementById('clear-history-button');
-    this.clearPrivateDataButton =
-      document.getElementById('clear-private-data-button');
+    // this.settingsDoneButton = document.getElementById('settings-done-button');
+    // this.clearHistoryButton = document.getElementById('clear-history-button');
+    // this.clearPrivateDataButton =
+    //   document.getElementById('clear-private-data-button');
     this.aboutBrowserButton = document.getElementById('about-browser-button');
     this.searchEngineHeading = document.getElementById('search-engine-heading');
     this.searchEngineSection = document.getElementById('search-engine-section');

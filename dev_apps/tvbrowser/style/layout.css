@@ -16,7 +16,7 @@ ul {
 /* state */
 
 .is-hidden {
-  display: none;
+  display: none !important;
 }
 
 /* layout */
