@@ -18,13 +18,13 @@
     settings.init({mediator: mediator});
   };
 
-  mediator.unInit = function mediator_unInit() {
+  mediator.uninit = function mediator_uninit() {
     awesomescreen = null;
     toolbar = null;
     settings = null;
-    toolbar.unInit();
-    awesomescreen.unInit();
-    settings.unInit();
+    toolbar.uninit();
+    awesomescreen.uninit();
+    settings.uninit();
   };
 
   // Navigation methods

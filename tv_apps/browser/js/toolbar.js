@@ -175,7 +175,7 @@
     settingsButton.addEventListener('click', mediator.showSettings);
   };
 
-  toolbar.unInit = function toolbar_unInit() {
+  toolbar.uninit = function toolbar_uninit() {
     mediator = null;
 
     toolbarElement = null;
