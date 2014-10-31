@@ -1,7 +1,5 @@
 'use strict';
 
-/* global Browser */
-
 // https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabaseException
 // IDBDatabaseException obselete
 /* global IDBDatabaseException */
@@ -9,8 +7,7 @@
 (function (exports) {
 
   /** Support different browser versions of IndexedDB */
-  var idb = window.indexedDB || window.webkitIndexedDB ||
-    window.mozIndexedDB || window.msIndexedDB;
+  var idb = window.indexedDB || window.mozIndexedDB;
 
   /**
    * Provide access to bookmarks, topsites, history, search engines and settings
@@ -28,72 +25,19 @@
      * Default to 100kB.
      */
     MAX_ICON_SIZE: 102400, // 100kB
-    /** Number of top sites to keep screenshots for. Default to 4. */
-    TOP_SITE_SCREENSHOTS: 4,
-    variantObserver: null,
-
-    /**
-     * Init system message handler of 'first-run-with-sim'.
-     * On 'first-run-with-sim' populates bookmarks from configuration data to
-     * database.
-     */
-    waitFirstRunWithSim: function browserDB_waitFirstRunWithSim() {
-      window.navigator.mozSetMessageHandler('first-run-with-sim', (
-        function(msg) {
-        Browser.getConfigurationData({ mcc: msg.mcc, mnc: msg.mnc },
-                                     this.populateBookmarks);
-      }).bind(this));
-    },
+    /** Number of top sites to keep screenshots for. Default to 9. */
+    TOP_SITE_SCREENSHOTS: 9,
 
     /**
      * Initialization. Open a database.
      * @param {Function} callback The callback to be run on success
      */
-    init: function browserDB_init(callback) {
-      this.db.open(callback);
-    },
-
-    /**
-     * Listen for mozSettingsEvent on 'operatorResources.data.topsites'.
-     * Populate topsites data from mozSettings to database.
-     */
-    initSingleVariant: function browserDB_initSingleVariant() {
-      this.variantObserver = this.handleSingleVariant.bind(this);
-      navigator.mozSettings.addObserver('operatorResources.data.topsites',
-                                        this.variantObserver);
-
-      var request = navigator.mozSettings.createLock()
-                    .get('operatorResources.data.topsites');
-      request.onsuccess = (function() {
-        this.handleTopSites(request.result['operatorResources.data.topsites']);
-      }.bind(this));
-    },
-
-    /**
-     * Listener of mozSettingsEvent on 'operatorResources.data.topsites'.
-     * Populate topsites data with event.settingValue.
-     */
-    handleSingleVariant: function browserDB_handleSingleVariant(event) {
-      this.handleTopSites(event.settingValue);
-    },
-
-    /**
-     * Remove listener of mozSettingsEvent on 'operatorResources.data.topsites'.
-     * Populate topsites data to database and empty
-     * 'operatorResources.data.topsites' in mozSettings.
-     * @param {Object} data Topsites data
-     */
-    handleTopSites: function browserDB_handleTopSites(data) {
-      if (data && Object.keys(data).length !== 0) {
-        navigator.mozSettings.removeObserver('operatorResources.data.topsites',
-                                             this.variantObserver);
-
-        this.populateTopSites(data.topSites, -1);
-
-        navigator.mozSettings.createLock()
-                 .set({'operatorResources.data.topsites': {}});
-        return;
-      }
+    init: function browserDB_init(options) {
+      return this.db.open().then(function(upgradeFrom) {
+        if (upgradeFrom != -1) {
+          BrowserDB.populate(options, upgradeFrom);
+        }
+      });
     },
 
     /**
@@ -130,67 +74,59 @@
       }, this);
     },
 
+    populateBookmarks: function browserDB_populateBookmarks(data, upgradeFrom) {
+      console.log('populateBookmarks');
+      // Populate bookmarks if upgrading from version 0 or below
+      if (upgradeFrom < 1 && data.bookmarks) {
+        data.bookmarks.forEach(function(bookmark) {
+          if (!bookmark.uri || !bookmark.title) {
+            return;
+          }
+          BrowserDB.addBookmark(bookmark.uri, bookmark.title);
+          if (bookmark.iconUri) {
+            BrowserDB.setAndLoadIconForPage(bookmark.uri, bookmark.iconUri);
+          }
+        }, BrowserDB);
+      }
+      // Populate search engines & settings if upgrading from below version 7
+      if (upgradeFrom < 7 && data.searchEngines && data.settings) {
+        var defaultSearchEngine = data.settings.defaultSearchEngine;
+        if (defaultSearchEngine) {
+          BrowserDB.updateSetting(defaultSearchEngine, 'defaultSearchEngine');
+        }
+        BrowserDB.db.clearSearchEngines(function browserDB_addSearchEngines() {
+          data.searchEngines.forEach(function(searchEngine) {
+            if (!searchEngine.uri || !searchEngine.title ||
+                !searchEngine.iconUri) {
+              return;
+            }
+            BrowserDB.addSearchEngine(searchEngine);
+            if (searchEngine.uri == defaultSearchEngine) {
+              // Browser.searchEngine = searchEngine;
+            }
+            BrowserDB.setAndLoadIconForPage(searchEngine.uri,
+              searchEngine.iconUri);
+          }, BrowserDB);
+        });
+      }
+    },
+
     /**
      * Populate browser database with top site and bookmark configuration data
      * specified at build time.
      *
-     * @param {Integer} upgradeFrom Version of database being upgraded from.
-     * @param {Function} callback Runs on addBookmark or addSearchEngine,
-     *                            might run more than once... Not being used.
+     * @param {Object}  config      Config object
+     * @param {Integer} upgradeFrom Version of database being upgraded from
      */
-    populate: function browserDB_populate(upgradeFrom, callback) {
+    populate: function browserDB_populate(config, upgradeFrom) {
       console.log('Populating browser database.');
 
-      var self = this;
-      this.populateBookmarks = function(data) {
-        // Populate bookmarks if upgrading from version 0 or below
-        if (upgradeFrom < 1 && data.bookmarks) {
-          data.bookmarks.forEach(function(bookmark) {
-            if (!bookmark.uri || !bookmark.title) {
-              return;
-            }
-            self.addBookmark(bookmark.uri, bookmark.title, callback);
-            if (bookmark.iconUri) {
-              self.setAndLoadIconForPage(bookmark.uri, bookmark.iconUri);
-            }
-          }, self);
-        }
-        // Populate search engines & settings if upgrading from below version 7
-        if (upgradeFrom < 7 && data.searchEngines && data.settings) {
-          var defaultSearchEngine = data.settings.defaultSearchEngine;
-          if (defaultSearchEngine) {
-            self.updateSetting(defaultSearchEngine, 'defaultSearchEngine');
-          }
-          self.db.clearSearchEngines(function browserDB_addSearchEngines() {
-            data.searchEngines.forEach(function(searchEngine) {
-              if (!searchEngine.uri || !searchEngine.title ||
-                  !searchEngine.iconUri) {
-                return;
-              }
-              self.addSearchEngine(searchEngine, callback);
-              if (searchEngine.uri == defaultSearchEngine) {
-                Browser.searchEngine = searchEngine;
-              }
-              self.setAndLoadIconForPage(searchEngine.uri,
-                searchEngine.iconUri);
-            }, self);
-          });
-        }
-      };
+      // Populate top sites if upgrading from below version 7
+      if (upgradeFrom < 7 && config.topSites) {
+        this.populateTopSites(config.topSites, -20);
+      }
 
-      Browser.getDefaultData(function(data) {
-        if (!data) {
-          return;
-        }
-        // Populate top sites if upgrading from below version 7
-        if (upgradeFrom < 7 && data.topSites) {
-          self.populateTopSites(data.topSites, -20);
-        }
-
-      });
-
-      Browser.getConfigurationData({ mcc: '000', mnc: '000' },
-                                   this.populateBookmarks);
+      this.populateBookmarks(config, upgradeFrom);
     },
 
     /**
@@ -276,20 +212,28 @@
      * Add a bookmark into database.
      * @param {String} uri URI
      * @param {String} title Title
-     * @param {Function} callback Runs on success
+     * @param {Object} A Promise object
      */
-    addBookmark: function browserDB_addBookmark(uri, title, callback) {
-      if (!title) {
-        title = uri;
-      }
-      var bookmark = {
-        uri: uri,
-        title: title,
-        timestamp: new Date().getTime()
-      };
-      this.addPlace(uri, (function() {
-        this.db.saveBookmark(bookmark, callback);
-      }).bind(this));
+    addBookmark: function browserDB_addBookmark(uri, title) {
+      var self = this;
+
+      var promise = new Promise(function(resolve, reject) {
+        if (!title) {
+          title = uri;
+        }
+
+        var bookmark = {
+          uri: uri,
+          title: title,
+          timestamp: new Date().getTime()
+        };
+
+        self.addPlace(uri, function() {
+          self.db.saveBookmark(bookmark, resolve);
+        });
+      });
+
+      return promise;
     },
 
     /**
@@ -304,10 +248,17 @@
 
     /**
      * Get all bookmarks.
-     * @param {Function} callback Runs on success with an array of bookmarks
+     * @return {Object} A Promise object, resolved with an array of bookmarks
      */
     getBookmarks: function browserDB_getBookmarks(callback) {
-      this.db.getAllBookmarks(callback);
+      var self = this;
+      var promise = new Promise(function(resolve, reject) {
+        self.db.getAllBookmarks(function(bookmarks) {
+          resolve(bookmarks);
+        });
+      });
+
+      return promise;
     },
 
     /**
@@ -465,12 +416,19 @@
      * Get top sites.
      * @param {Number} maximum The maximum number of top sites to get
      * @param {String} filter URI filter. Pass in null to ignore.
-     * @param {Function} callback Run on success with topsites array and filter
-     *                            as arguments.
+     * @return {Object} A Promise object resolved with a topSites array
      */
-    getTopSites: function browserDB_getTopSites(maximum, filter, callback) {
-      // Get the top 20 sites
-      this.db.getPlacesByFrecency(maximum, filter, callback);
+    getTopSites: function browserDB_getTopSites(maximum, filter) {
+      var self = this;
+      var promise = new Promise(function(resolve, reject) {
+        // Get the top 20 sites
+        self.db.getPlacesByFrecency(maximum, filter,
+          function(topSites, filter) {
+          resolve(topSites);
+        });
+      });
+
+      return promise;
     },
 
     /**
@@ -482,12 +440,19 @@
     },
 
     /**
-     * Get the latest 20 history entries.
-     * @param {Function} callback Run with array of history entries
+     * Get the latest history entries.
+     * @param {Number} maximum The maximum number of recent history to get
+     * @return {Object} A Promise object, resolved with a history array
      */
-    getHistory: function browserDB_getHistory(callback) {
-      // Just get the most recent 20 for now
-      this.db.getHistory(20, callback);
+    getHistory: function browserDB_getHistory(maximum) {
+      var self = this;
+      var promise = new Promise(function(resolve, reject) {
+        self.db.getHistory(maximum, function(history) {
+          resolve(history);
+        });
+      });
+
+      return promise;
     },
 
     /**
@@ -563,30 +528,33 @@
     open: function db_open(callback) {
       const DB_VERSION = 7;
       const DB_NAME = 'browser';
-      var request = idb.open(DB_NAME, DB_VERSION);
 
-      request.onupgradeneeded = (function onUpgradeNeeded(e) {
-        console.log('Browser database upgrade needed, upgrading.');
-        this.upgradeFrom = e.oldVersion;
-        this._db = e.target.result;
-        this.upgrade();
-      }).bind(this);
+      var self = this;
 
-      request.onsuccess = (function onSuccess(e) {
-        this._db = e.target.result;
+      var promise = new Promise(function(resolve, reject) {
 
-        callback();
-        if (this.upgradeFrom != -1) {
-          BrowserDB.populate(this.upgradeFrom);
-        }
+        var request = idb.open(DB_NAME, DB_VERSION);
 
-        BrowserDB.initSingleVariant();
+        request.onupgradeneeded = function onUpgradeNeeded(e) {
+          console.log('Browser database upgrade needed, upgrading.');
+          self.upgradeFrom = e.oldVersion;
+          self._db = e.target.result;
+          self.upgrade();
+        };
 
-      }).bind(this);
+        request.onsuccess = function onSuccess(e) {
+          self._db = e.target.result;
 
-      request.onerror = (function onDatabaseError(e) {
-        console.log('Error opening browser database');
-      }).bind(this);
+          resolve(self.upgradeFrom);
+        };
+
+        request.onerror = function onDatabaseError(e) {
+          console.log('Error opening browser database');
+        };
+
+      });
+
+      return promise;
     },
 
     /**
