@@ -45,6 +45,14 @@ input[type="image"] {
   display: none;
 }
 
+#frames > iframe {
+  position: absolute;
+  display: block;
+  height: 100%;
+  width: 100%;
+  border: none;
+}
+
 #awesomescreen, #crashscreen {
   font-size: 1.7rem;
 }

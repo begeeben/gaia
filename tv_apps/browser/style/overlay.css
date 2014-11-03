@@ -1,0 +1,100 @@
+#danger-dialog {
+  z-index: 200;
+}
+
+/** Bookmark Menu **/
+#bookmark-menu {
+  position: absolute;
+  z-index: 61;
+}
+
+/* Edit bookmark entry sheet */
+
+#bookmark-entry-sheet {
+  z-index: 101;
+  display: block;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #EEEEEE;
+}
+
+/*
+ * HTTP Authentication Dialog
+ */
+#http-authentication-dialog {
+  z-index: 102;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #EEEEEE;
+}
+
+#http-authentication-message {
+  display: block;
+  font-size: 1.5rem;
+  margin: 1rem 2rem;
+}
+
+#http-authentication-message.error {
+  color: #950d0d;
+}
+
+/* The following can be removed once we have a building block
+ * for entry sheets.
+ */
+ #bookmark-entry-sheet label,
+ #http-authentication-dialog label {
+  display: block;
+  position: relative;
+  margin: 1rem 2rem;
+  text-transform: uppercase;
+  font-size: 1.4rem;
+ }
+
+#save-media-status {
+  display: none;
+}
+
+#save-media-status.visible {
+  display: block;
+}
+
+#dialog-overlay {
+  display: none;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.modal-active #dialog-overlay {
+  display: block;
+}
+
+menu[type="toolbar"] {
+  height: 4.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+menu[type="toolbar"] button {
+  background-color: transparent;
+  -moz-appearance: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 3rem auto;
+  border: none;
+  border-radius: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 8rem;
+  height: 4.5rem;
+  float: left;
+}

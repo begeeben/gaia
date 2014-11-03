@@ -41,6 +41,8 @@
    *                    urlButtonModes.STOP
    */
   function setUrlButtonMode(mode) {
+    // console.log('setUrlButtonMode ' + mode);
+
     urlButtonMode = mode;
 
     if (!urlButtonMode) {
@@ -62,6 +64,9 @@
       case urlButtonModes.STOP:
         urlButton.style.backgroundImage = 'url(style/images/stop.png)';
         break;
+      // case urlButtonModes.SEARCH:
+      //   urlButton.style.backgroundImage = 'url(style/images/search.png)';
+      //   break;
     }
   }
 
@@ -159,6 +164,8 @@
 
     urlBar.addEventListener('submit', urlBarOnSubmit);
     urlInput.addEventListener('focus', urlInputOnFocus);
+    // urlInput.addEventListener('blur', urlBlur);
+    // urlInput.addEventListener('touchend', urlTouchEnd);
     urlInput.addEventListener('input', urlInputOnInput);
     urlButton.addEventListener('click', urlButtonOnClick);
     // buttons visable when awesomescreen is visable
@@ -199,6 +206,8 @@
 
     urlBar.removeEventListener('submit', urlBarOnSubmit);
     urlInput.removeEventListener('focus', urlInputOnFocus);
+    // urlInput.removeEventListener('blur', urlBlur);
+    // urlInput.removeEventListener('touchend', urlTouchEnd);
     urlInput.removeEventListener('input', urlInputOnInput);
     urlButton.removeEventListener('click', urlButtonOnClick);
     // buttons visable when awesomescreen is visable
@@ -222,6 +231,14 @@
       canZoomReset: false,
       isScrollMode: false
     };
+  };
+
+  toolbar.show = function toolbar_show() {
+
+  };
+
+  toolbar.hide = function toolbar_hide() {
+
   };
 
   toolbar.setUrlButtonMode = setUrlButtonMode;
@@ -266,6 +283,14 @@
   };
 
   /**
+   * Update ssl indicator appearance.
+   * @param  {[type]} state [description]
+   */
+  toolbar.updateSecurityIcon = function toolbar_updateSecurityIcon(state) {
+    sslIndicator.value = state;
+  };
+
+  /**
    * Update the number of tabs on the toolbar.
    * @param  {Number} num Number of tabs
    */
@@ -277,3 +302,60 @@
 
 })(window);
 
+// var Toolbar = {
+
+//   /**
+//    * Intialise toolbar.
+//    */
+//   init: function toolbar_init() {
+//     this.backButton = document.getElementById('back-button');
+//     this.forwardButton = document.getElementById('forward-button');
+//     this.shareButton = document.getElementById('share-button');
+//     this.bookmarkButton = document.getElementById('bookmark-button');
+//     this.shareButton.addEventListener('click',
+//       this.handleShareButtonClick.bind(this));
+//     this.backButton.addEventListener('click',
+//       Browser.goBack.bind(Browser));
+//     this.forwardButton.addEventListener('click',
+//       Browser.goForward.bind(Browser));
+//     this.bookmarkButton.addEventListener('click',
+//       Browser.showBookmarkMenu.bind(Browser));
+//   },
+
+//   /**
+//    * Refresh state of bookmark button based on current tab URL.
+//    */
+//   refreshBookmarkButton: function toolbar_refreshBookmarkButton() {
+//     if (!Browser.currentTab.url) {
+//       this.bookmarkButton.classList.remove('bookmarked');
+//       return;
+//     }
+//     BrowserDB.getBookmark(Browser.currentTab.url, (function(bookmark) {
+//       if (bookmark) {
+//         this.bookmarkButton.classList.add('bookmarked');
+//       } else {
+//         this.bookmarkButton.classList.remove('bookmarked');
+//       }
+//     }).bind(this));
+//   },
+
+//   /**
+//    * Refresh state of all toolbar buttons.
+//    */
+//   refreshButtons: function toolbar_refreshButtons() {
+//     // When handling window.open we may hit this code
+//     // before canGoBack etc has been applied to the frame
+//     if (!Browser.currentTab.dom.getCanGoBack) {
+//       return;
+//     }
+
+//     Browser.currentTab.dom.getCanGoBack().onsuccess = (function(e) {
+//       this.backButton.disabled = !e.target.result;
+//     }).bind(this);
+//     Browser.currentTab.dom.getCanGoForward().onsuccess = (function(e) {
+//       this.forwardButton.disabled = !e.target.result;
+//     }).bind(this);
+//     this.refreshBookmarkButton();
+//   }
+
+// };

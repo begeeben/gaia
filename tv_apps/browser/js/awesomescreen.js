@@ -13,6 +13,7 @@
   var mediator;
 
   // DOM element references
+  // var awesomescreenElement;
   var tabs, tabPanels;
   var topSitesTab, bookmarksTab, historyTab, editButton;
   var topSitesPanel, bookmarksPanel, historyPanel;
@@ -43,6 +44,8 @@
   var bookmarkListTemplate, bookmarkListItemTemplate;
   var historyDateHeaderTemplate;
 
+  // use it temporarily
+  // compare the performance with innerHTML later
   function initTemplates() {
     topSiteListTemplate = document.createElement('ul');
     topSiteListTemplate.setAttribute('id', 'top-site-list');
@@ -58,6 +61,7 @@
     bookmarkListTemplate.setAttribute('role', 'listbox');
 
     bookmarkListItemTemplate = document.createElement('li');
+    // bookmarkListItemTemplate.setAttribute('class', 'top-site-item');
     bookmarkListItemTemplate.setAttribute('role', 'listitem');
 
     var bookmarkLink = document.createElement('a');
@@ -78,6 +82,8 @@
       link.style.backgroundImage = 'url(' + objectURL + ')';
     }
 
+    // link.style.backgroundImage = topSite.screenshotUrl ?
+    //   'url(' + topSite.screenshotUrl + ')': '';
     listItem.querySelector('span').textContent = topSite.title;
     return listItem;
   }
@@ -154,6 +160,8 @@
     return h3;
   }
 
+  // use the same template as bookmarks
+  // assume sites are ordered by date descending
   function updateHistoryPanel(sites) {
     var fragment = document.createDocumentFragment();
     var list = bookmarkListTemplate.cloneNode();
@@ -241,6 +249,7 @@
     mediator = options.mediator;
 
     // Get DOM element references
+    // awesomescreenElement = document.getElementById('awesomescreen');
     tabs = document.querySelectorAll('#awesomescreen [role="tab"]');
     tabPanels = document.getElementById('tab-panels');
     topSitesTab = document.getElementById('top-sites-tab');
@@ -265,6 +274,10 @@
     // remove event listeners
     // clear unused variables
   };
+
+  // awesomescreen.show = function awesomescreen_show(options) {
+  //   awesomescreen.showTopSites();
+  // };
 
   awesomescreen.showTopSites = function awesomescreen_showTopSites(focus) {
     selectTab(topSitesTab, topSitesPanel);
