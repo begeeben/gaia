@@ -18,6 +18,7 @@
     settings = options.settings;
     browserDB.init(config).then(function() {
       // show awesomescreen
+      awesomescreen.showTopSites(true);
     });
 
     toolbar.init({mediator: mediator});
