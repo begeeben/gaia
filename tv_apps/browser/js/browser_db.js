@@ -75,7 +75,6 @@
     },
 
     populateBookmarks: function browserDB_populateBookmarks(data, upgradeFrom) {
-      console.log('populateBookmarks');
       // Populate bookmarks if upgrading from version 0 or below
       if (upgradeFrom < 1 && data.bookmarks) {
         data.bookmarks.forEach(function(bookmark) {
@@ -119,8 +118,6 @@
      * @param {Integer} upgradeFrom Version of database being upgraded from
      */
     populate: function browserDB_populate(config, upgradeFrom) {
-      console.log('Populating browser database.');
-
       // Populate top sites if upgrading from below version 7
       if (upgradeFrom < 7 && config.topSites) {
         this.populateTopSites(config.topSites, -20);

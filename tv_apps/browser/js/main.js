@@ -11,7 +11,8 @@
     mediator.init({
       awesomescreen: awesomescreen,
       toolbar: toolbar,
-      settings: settings
+      settings: settings,
+      browserDB: browserDB
     });
   });
 
