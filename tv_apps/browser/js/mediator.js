@@ -2,6 +2,7 @@
 
 (function (exports) {
 
+  var config;
   var awesomescreen;
   var toolbar;
   var settings;
@@ -9,6 +10,7 @@
   var mediator = {};
 
   mediator.init = function mediator_init(options) {
+    config = options.config;
     awesomescreen = options.awesomescreen;
     toolbar = options.toolbar;
     settings = options.settings;
@@ -22,6 +24,7 @@
     toolbar.uninit();
     awesomescreen.uninit();
     settings.uninit();
+    config = null;
     awesomescreen = null;
     toolbar = null;
     settings = null;
