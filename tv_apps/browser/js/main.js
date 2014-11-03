@@ -1,4 +1,4 @@
-/* global mediator, awesomescreen, toolbar, settings, config */
+/* global mediator, awesomescreen, toolbar, settings, config, browserDB */
 
 'use strict';
 

@@ -4,6 +4,7 @@
 
   var config;
   var awesomescreen;
+  var browserDB;
   var toolbar;
   var settings;
 
@@ -12,8 +13,12 @@
   mediator.init = function mediator_init(options) {
     config = options.config;
     awesomescreen = options.awesomescreen;
+    browserDB = options.browserDB;
     toolbar = options.toolbar;
     settings = options.settings;
+    browserDB.init(config).then(function() {
+      // show awesomescreen
+    });
 
     toolbar.init({mediator: mediator});
     awesomescreen.init({mediator: mediator});
@@ -21,11 +26,13 @@
   };
 
   mediator.uninit = function mediator_uninit() {
+    browserDB.uninit();
     toolbar.uninit();
     awesomescreen.uninit();
     settings.uninit();
     config = null;
     awesomescreen = null;
+    browserDB = null;
     toolbar = null;
     settings = null;
   };
