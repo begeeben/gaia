@@ -19,12 +19,12 @@
   };
 
   mediator.uninit = function mediator_uninit() {
-    awesomescreen = null;
-    toolbar = null;
-    settings = null;
     toolbar.uninit();
     awesomescreen.uninit();
     settings.uninit();
+    awesomescreen = null;
+    toolbar = null;
+    settings = null;
   };
 
   // Navigation methods
