@@ -1,0 +1,444 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    color: white;
+}
+
+#cp-title{
+    position: absolute;
+    top: 0;
+    left:0;
+    width: 100%;
+    height: 52px;
+}
+
+#main_title{
+    font-size: 23px;
+}
+body[lang^=my] #main_title {
+  font-size: calc(23px * 0.7);
+}
+
+#change_title{
+    font-size: 25px;
+}
+#change_title .word_inner {
+    max-width:300px;
+}
+body[lang^=my] #change_title {
+  font-size: calc(25px * 0.6);
+}
+
+.word_outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    width: 93%;
+    height: 100%;
+}
+
+.word_inner {
+    vertical-align: middle;
+    max-width: 400px;
+    height: 60%;
+}
+
+.word_content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+body[lang^=th] .word_content {
+  padding: 6px 0;
+  margin-top: -6px;
+}
+
+#page{
+    position: absolute;
+    top: 52px;
+    left:0;
+    width: 480px;
+    height: 800px;
+}
+
+#icon {
+    position: absolute;
+    top: 485px;
+    left: 9px;
+    width: 60px;
+    height: 452px;
+}
+
+#button_box {
+    display: flex;
+    flex-direction: column;
+    justfiy-content: space-around;
+    width: 100%;
+    height: 100%;
+}
+
+.disappear {
+    opacity : 0;
+}
+
+.hide {
+    opacity : 0;
+    pointer-events: none;
+}
+
+.button {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    outline: none;
+    margin-bottom:6px;
+    border-radius:50%;
+    transition-property: transform;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in;
+}
+
+.button img {
+    position: absolute;
+    top:-10px;
+    left:-10px;
+    width : 70px;
+    height: 70px;
+    border-radius:50%;
+}
+.button:nth-child(n) {
+    transform: translateX(-100px);
+}
+.show .button:nth-child(n) {
+    transform: translateX(0px);
+}
+.show .button:nth-child(1) {
+    transition-delay: 0.1s;
+}
+.show .button:nth-child(2) {
+    transition-delay: 0.15s;
+}
+.show .button:nth-child(3) {
+    transition-delay: 0.2s;
+}
+.show .button:nth-child(4) {
+    transition-delay: 0.25s;
+}
+.show .button:nth-child(5) {
+    transition-delay: 0.3s;
+}
+.show .button:nth-child(6) {
+    transition-delay: 0.35s;
+}
+.show .button:nth-child(7) {
+    transition-delay: 0.4s;
+}
+.show .button:nth-child(8) {
+    transition-delay: 0.45s;
+}
+
+.button:nth-child(1) {
+    transition-delay: 0.45s;
+}
+.button:nth-child(2) {
+    transition-delay: 0.4s;
+}
+.button:nth-child(3) {
+    transition-delay: 0.35s;
+}
+.button:nth-child(4) {
+    transition-delay: 0.3s;
+}
+.button:nth-child(5) {
+    transition-delay: 0.25s;
+}
+.button:nth-child(6) {
+    transition-delay: 0.2s;
+}
+.button:nth-child(7) {
+    transition-delay: 0.15s;
+}
+.button:nth-child(8) {
+    transition-delay: 0.1s;
+}
+
+#frmbase {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 450px;
+    height: 800px;
+}
+#frm_back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+#frm {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0; 
+    transform: scale(1.0);
+    transform-origin: 0 0;
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+    overflow: hidden;
+}
+
+#clip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 450px;
+    height: 800px;
+    outline: none;
+}
+
+/* .button-2:focus, */
+/* .button:focus, */
+/* #bk_return:focus, */
+#clip:focus {
+    box-shadow: 0 0 0 6px rgb(255,240,57);
+}
+
+#cap_img {
+    width: 450px;
+    height: auto;
+}
+
+.msg_outer {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity:0;
+}
+.msg_inner {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 450px;
+    height:auto;
+    max-height:100px;
+    width:450px;
+    overflow: hidden;
+}
+#connect_msg {
+    text-overflow: ellipsis;
+    white-space: normal;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    font-size: 28px;
+    max-width: 450px;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+body[lang^=th] #connect_msg {
+  padding: 10px;
+}
+body[lang^=my] #connect_msg {
+  font-size: calc(28px * 0.8);
+}
+
+#bar {
+    display: flex;
+    justfiy-content: center;
+    position: absolute;
+    top: 852px;
+    left: 0;
+    height: 148px;
+    width: 100%;
+}
+
+.button-2 {
+    margin : auto;
+    width: 95px;
+    height: 95px;
+    cursor: pointer;
+    outline: none;
+    border-radius:50%;
+}
+
+.button-2 img {
+    position : absolute;
+    width : 95px;
+    height: 95px;
+}
+
+.button .default,
+.button:focus .focus,
+.button-2 .default,
+.button-2:focus .focus,
+.button-3 .default,
+.button-3:focus .focus {
+    opacity : 1.0;
+}
+
+.button .focus,
+.button:focus .default,
+.button-2 .focus,
+.button-2:focus .default,
+.button-3 .focus,
+.button-3:focus .default {
+    opacity : 0;
+}
+
+#bk_bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 50px;
+    width: 100%;
+}
+
+.button-3 {
+    position: absolute;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    outline: none;
+    border-radius:50%;
+}
+
+.button-3 img {
+    position : absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width : 100%;
+    height: auto;
+}
+
+.fade_act {
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+}
+
+#select_page {
+    position: absolute;
+    top: 66px;
+    left:0;
+    width: 480px;
+    height: 856px;
+    overflow: hidden;
+}
+#bookmarks {
+    position: relative;
+    width: 87%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    transition-property: transform;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in;
+}
+#bk_button {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+.bk {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 94px;
+    cursor: pointer;
+    outline: none;
+    border-top: solid 1px #7A7A7A;
+}
+.bk:last-child {
+    border-bottom: solid 1px #7A7A7A;
+}
+
+.bk:focus {
+    box-shadow: 0 0 0 4px rgb(255,240,57) inset;
+ }
+.bk-icon {
+    position: relative;
+    width: 50px;
+    height: 98px;
+}
+.bk-icon-content {
+    position:absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 20px;
+    height: auto;
+}
+
+.bk-page {
+    width: auto;
+    height: auto;
+    font-size: 30px;
+}
+
+#loading {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    margin-top: 6px;
+}
+
+.loading_act {
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0%   { transform:rotate(0); }
+    100% { transform:rotate(360deg); }
+}
+
+.bk_content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: auto;
+    max-width: 350px;
+    height: auto;
+    transition: color 0.3s linear 0s;
+}
+body[lang^=th] .bk_content {
+  padding: 10px 0;
+}

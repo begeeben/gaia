@@ -1,0 +1,391 @@
+/* --------------- ifilter-list --------------- */
+#ifilter-list {
+  box-sizing: border-box;
+  font-size: 32px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1080px;
+  background-color: #e0e2e4;
+  z-index: 320;
+  -moz-transition: 0.5s ease-in-out;
+  -moz-transform: translateY(100%);
+}
+
+.ifilter-screen #ifilter-list {
+  display: block;
+  -moz-transform: translateY(0%);
+}
+
+#ifilter-list-area {
+  position: absolute;
+  top: 50px;
+  left: calc(100% / 2 - 1108px / 2);
+  right: calc(100% / 2 - 1108px / 2);
+  width: 1108px;
+}
+
+#ifilter-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  width: 100%;
+  font-family: Fira Sans;
+  font-size: 48px;
+  font-style: Italic; /* TODO: Regular? */
+  color: #4d4d4d;
+  pointer-events: none;
+}
+
+#ifilter-header-title {
+  display: inline;
+}
+
+#ifilter-header-exp {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  right: 0;
+  width: 100%;
+  font-family: Fira Sans;
+  font-size: 32px;
+  font-style: Italic; /* TODO: Regular? */
+  color: #4d4d4d;
+}
+
+#ifilter-header-exp1,
+#ifilter-header-exp2 {
+  height: 48px;
+  display: inline;
+}
+
+#ifilter-list-item {
+  position: absolute;
+  top: 220px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  width: 100%;
+
+}
+
+#ifilter-offer, 
+#ifilter-func,
+#ifilter-server,
+#ifilter-port,
+#ifilter-id {
+  position: relative;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  width: 100%;
+  height: 72px;
+  padding: 15px; /* TODO: 20px */
+  font-family: Fira Sans;
+  font-size: 32px;
+  border-bottom: solid 1px #b4b5b6;
+  -moz-transition: border-bottom 0.6s cubic-bezier(0.25, 0, 0, 1.0),
+                   height 0.6s cubic-bezier(0.25, 0, 0, 1.0),
+                   font-size 0.6s cubic-bezier(0.25, 0, 0, 1.0);
+}
+
+#ifilter-offer:hover,
+#ifilter-func:hover,
+#ifilter-server:hover,
+#ifilter-port:hover,
+#ifilter-id:hover {
+  height: 92px;
+  font-size: 38px;
+  border-bottom: solid 6px #b4b5b6;
+}
+
+#ifilter-offer:active,
+#ifilter-func:active,
+#ifilter-server:active,
+#ifilter-port:active,
+#ifilter-id:active {
+  height: 92px;
+  font-size: 38px;
+  border-bottom: solid 6px #b4b5b6;
+}
+
+#ifilter-offer-title,
+#ifilter-func-title,
+#ifilter-server-title,
+#ifilter-port-title,
+#ifilter-id-title,
+#ifilter-func-content,
+#ifilter-server-content,
+#ifilter-port-content,
+#ifilter-id-content {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  margin: auto;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#ifilter-offer-title,
+#ifilter-func-title,
+#ifilter-server-title,
+#ifilter-port-title,
+#ifilter-id-title {
+  width: 54%;
+  text-align: left;
+  color: #4d4d4d;
+  -moz-transition: padding 0.16s cubic-bezier(0.25, 0, 0, 1.0);
+}
+
+#ifilter-func-content,
+#ifilter-server-content,
+#ifilter-port-content,
+#ifilter-id-content {
+  padding-right: 5px;
+  width: 45%;
+  text-align: right;
+  color: #8f8f8f;
+  font-family: Fira Sans;
+  font-style: Italic; /* TODO: Light Italic */
+}
+
+#ifilter-offer:active > #ifilter-offer-title,
+#ifilter-func:active > #ifilter-func-title,
+#ifilter-server:active > #ifilter-server-title,
+#ifilter-port:active > #ifilter-port-title,
+#ifilter-id:active > #ifilter-id-title {
+  padding-left: 10px;
+}
+
+#ifilter-offer:active > #ifilter-offer-title,
+#ifilter-func:active > #ifilter-func-title,
+#ifilter-func:active > #ifilter-func-content,
+#ifilter-server:active > #ifilter-server-title,
+#ifilter-server:active > #ifilter-server-content,
+#ifilter-port:active > #ifilter-port-title,
+#ifilter-port:active > #ifilter-port-content,
+#ifilter-id:active > #ifilter-id-title,
+#ifilter-id:active > #ifilter-id-content {
+  color: #00aac5;
+}
+
+#ifilter-dialog.hidden,
+#ifilter-dialog-func.hidden {
+  display: none;
+}
+
+#ifilter-dialog {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  margin: auto;
+  background-color: rgba(0,0,0,0.9);
+  font-size: 38px;
+}
+
+#ifilter-dialog-func {
+  position: absolute;
+  width: 700px;
+  height: 658px;
+  top: calc(100% / 2 - 658px / 2); /* dialog centering */
+  left: calc(100% / 2 - 700px / 2); /* dialog centering */
+}
+
+#ifilter-dialog-func-header {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  width: 100%;
+  height: 38px;
+  margin: auto;
+  text-align: center;
+}
+
+#ifilter-dialog-func-header-title {
+  display: inline;
+  top: 0;
+  left: 0;
+  font-size: 44px;
+  font-family: Fira Sans;
+  font-style: Italic; /* TODO: Light Italic */
+  color: #f9f9f9;
+}
+
+#ifilter-dialog-func-select {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  height: 120px;
+}
+
+#ifilter-dialog-func-select-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+}
+
+#ifilter-dialog-func-select-list > .item {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  outline: none;
+}
+
+#ifilter-dialog-func-select-list > .item > .title {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+}
+
+#ifilter-dialog-func-select-list > .item > .title > .name {
+  top: 0;
+  left: 0;
+  display: inline;
+  width: 100%;
+  height: 60px;
+  line-height: 100%;
+  margin-left: 94px;
+  font-size: 44px;
+  text-align: center;
+  font-family: Fira Sans;
+  font-style: Italic; /* TODO: Light Italic */
+  color: #ffffff;
+  -moz-transition: -moz-transform 0.6s cubic-bezier(0.25, 0, 0, 1.0),
+                   color 0.6s cubic-bezier(0.25, 0, 0, 1.0);
+}
+
+#ifilter-dialog-func-select-list > .item > .check {
+  top: 0;
+  height: 100%;
+  width: 94px;
+  margin: auto;
+  display: inline-flex;
+}
+
+#ifilter-dialog-func-select-list > .item > .check > .off {
+  width: 48px;
+  height: 48px;
+}
+
+#ifilter-dialog-func-select-list > .item > .check > .on {
+  width: 60px;
+  height: 60px;
+  background-image: url('../style/images/check-on.svg');
+  background-position: contain;
+  background-size: cover;
+  -moz-transition: -moz-transform 0.6s cubic-bezier(0.25, 0, 0, 1.0);
+}
+
+#ifilter-dialog-func-button {
+  position: absolute;
+  margin: auto;
+  top: 448px;
+  left: 0;
+  width: 100%;
+  height: 210px;
+}
+
+#ifilter-dialog-func-cancel {
+  position: absolute;
+  top: 0;
+  left: 372px;
+  height: 210px;
+  width: 210px;
+  font-size: 24px;
+  font-family: Fira Sans;
+  border: 0;
+  border-radius: 50%;
+  background-image: none;
+  background-color: #5f6368;
+  color: #ffffff;
+  -moz-transition: -moz-transform 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   background-color 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   color 0.42s cubic-bezier(0.25, 0, 0, 1.0);
+}
+
+#ifilter-dialog-func-ok {
+  position: absolute;
+  top: 0;
+  left: 118px;
+  height: 210px;
+  width: 210px;
+  font-size: 24px;
+  font-family: Fira Sans;
+  border: 0;
+  border-radius: 50%;
+  background-image: none;
+  background-color: #0097b6;
+  color: #ffffff;
+  -moz-transition: -moz-transform 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   background-color 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   color 0.42s cubic-bezier(0.25, 0, 0, 1.0);
+}
+
+
+#ifilter-dialog-func-select-list > .item:focus > .title > .name,
+#ifilter-dialog-func-select-list > .item:hover > .title > .name,
+#ifilter-dialog-func-select-list > .item:focus > .check > .on,
+#ifilter-dialog-func-select-list > .item:hover > .check > .on {
+  -moz-transform: scale(1.2);
+}
+
+#ifilter-dialog-func-select-list > .item > .title > .name[data-display="selected"],
+#ifilter-dialog-func-select-list > .item > .title > .name[data-display="selected"] {
+  color: #00caf2;
+}
+
+#ifilter-dialog-func-cancel:focus,
+#ifilter-dialog-func-cancel:hover {
+  -moz-transition: -moz-transform 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   background-color 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   color 0.42s cubic-bezier(0.25, 0, 0, 1.0);
+  background-color: #ffffff;
+  color: #2d2d2d;
+  -moz-transform: scale(1.2);
+}
+#ifilter-dialog-func-ok:focus,
+#ifilter-dialog-func-ok:hover {
+  -moz-transition: -moz-transform 0.42s cubic-bezier(0.25, 0, 0, 1.0),
+                   background-color 0.42s cubic-bezier(0.25, 0, 0, 1.0);
+  background-color: #0097b6;
+  -moz-transform: scale(1.2);
+}
+
+#ifilter-dialog-func-cancel.active,
+#ifilter-dialog-func-cancel:active {
+  -moz-transition: -moz-transform 0.06s cubic-bezier(0.25, 0, 0, 1.0),
+                   background-color 0.06s cubic-bezier(0.25, 0, 0, 1.0),
+                   color 0.06s cubic-bezier(0.25, 0, 0, 1.0);
+  background-color: #00caf2;
+  color: #ffffff;
+  -moz-transform: scale(1.0);
+}
+#ifilter-dialog-func-ok.active,
+#ifilter-dialog-func-ok:active {
+  -moz-transition: -moz-transform 0.06s cubic-bezier(0.25, 0, 0, 1.0),
+                   background-color 0.06s cubic-bezier(0.25, 0, 0, 1.0),
+                   color 0.06s cubic-bezier(0.25, 0, 0, 1.0);
+  background-color: #00758c;
+  color: #ffffff;
+  -moz-transform: scale(1.0);
+}
+
