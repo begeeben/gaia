@@ -8,15 +8,7 @@
     "browser":{},
     "systemXHR":{},
     "storage": {},
-    "desktop-notification" : {},
-    "device-storage:apps_nv" : { "access": "readwrite" },
-    "tcp-socket" : { "discription" : "for TV-Remote." },
-    "tv": {},
-    "pana-ext":{},
-    "settings:browser.proxy.app_origins":{"access": "readwrite"},
-    "settings:browser.proxy.enabled":{"access": "readwrite"},
-    "settings:browser.proxy.host":{"access": "readwrite"},
-    "settings:browser.proxy.port":{"access": "readwrite"}
+    "desktop-notification" : {}
   },
   "locales": {
     "ar": {
@@ -239,32 +231,9 @@
       }
     }
   },
-  "origin": "app://0077777700140002.myhomescreen.tv",
   "messages": [
      { "asr-event": "/index.html" }
   ],
-  "panasonic_extension" : {
-    "productid": "0077777700140002",
-    "disclaimer": false,
-    "latest_check": false,
-    "restricted": false,
-    "lockable": true,
-    "resumable": true,
-    "asr_dic":"browser",
-    "removable": false,
-    "input_device_settings": {
-      "mouse": "enable",
-      "touchpad": "mouse",
-      "remote_arrow_key": "mouse",
-      "keyboard_arrow_key": "arrow-key"
-    },
-    "dial_protocol" : {
-      "dial_name": "",
-      "dial_allow_stop": false,
-      "dial_state_recognizable": false,
-      "arg_type": "json"
-    }
-  },
   "widgets": {
     "mywidget1": {
       "name": "Web Clip",

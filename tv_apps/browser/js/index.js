@@ -120,10 +120,11 @@ var Browser = {
     Awesomescreen.init();
 
     // tv info
-    this.tvStore = window.navigator.panaSystem.tvstore;
-    window.navigator.inputPortManager.getInputPorts().then(inputs => {
-      Browser.inputs = inputs;
-    });
+    this.tvStore = window.navigator.panaSystem ?
+                            window.navigator.panaSystem.tvstore : {};
+    // window.navigator.inputPortManager.getInputPorts().then(inputs => {
+    //   Browser.inputs = inputs;
+    // });
 
     // init database
     BrowserDB.init((function() {
@@ -348,7 +349,7 @@ var Browser = {
       {'type':'places'   , 'maxNum': Browser.MAX_TOPSITE_LIST},
       {'type':'icons'    , 'maxNum': Browser.MAX_ICON_LIST}
     ]
-    
+
     for (var i=0; i < checkTypeTbl.length; i++) {
       if(checkTypeTbl[i].type != 'icons') {
         BrowserDB.db.idbMaxCheck(checkTypeTbl[i].type, checkTypeTbl[i].maxNum);
@@ -794,7 +795,7 @@ var Browser = {
   },
   keywordSearch: function browser_keywordSearch(param) {
     var action_id = {
-      'internet': 0, 'image': 1, 'video': 2, 'news': 3, 'maps': 4, 'youtube': 5, 
+      'internet': 0, 'image': 1, 'video': 2, 'news': 3, 'maps': 4, 'youtube': 5,
     };
     var index = (param.browser_param.id in action_id)?
         action_id[param.browser_param.id]: 0;
@@ -809,12 +810,12 @@ var Browser = {
     this.debug('search url = ' + url);
     this.navigate(url);
   },
- 
+
   /**
    * Set cursor pan mode.
    */
   setCursorPanMode: function browser_setCursorPanMode(mode) {
-    this.mainBlock.dataset.mode = mode; 
+    this.mainBlock.dataset.mode = mode;
   },
 
   /**
@@ -1263,12 +1264,15 @@ var Browser = {
     var tabIds = Object.keys(this.info);
     //Hide other than the selected tab
     for( var i = 0 ; i < tabCount ; i++ ) {
+      console.log('createIframe', tabIds, i);
+      console.log('createIframe', this.info[tabIds[i]]);
       this.switchVisibility(this.info[tabIds[i]], false);
     }
-    this.switchVisibility(info, true);
+    console.log('createIframe', info);
     this.bindBrowserEvents(iframe, info);
     this.info[info.id] = info;
     this.webBlock.appendChild(iframe);
+    this.switchVisibility(info, true);
     if( info.dom.zoom ) {
       info.dom.zoom(Toolbar.getDefaultZoomScale());
     } else {
@@ -1351,11 +1355,13 @@ var Browser = {
       clearTimeout(info.setVisibleTimeout);
     }
     if (info.dom.setVisible) {
+      console.log('setVisibleWrapper');
       this.switchVisibility(info, true);
       return;
     }
     info.setVisibleTimeout = setTimeout(function() {
       if (info.dom.setVisible) {
+        console.log('setVisibleWrapper');
         this.switchVisibility(info, true);
       }
     });
@@ -1524,7 +1530,7 @@ var Browser = {
    */
   getLanguage: function browser_getLanguage() {
     this.language = this.DEFAULT_LANG;
-    var getLang = this.tvStore.get('languageEnv');
+    var getLang = this.tvStore.get ? this.tvStore.get('languageEnv') : null;
     if(getLang){
       var lang = getLang;
       Browser.language = lang;
@@ -1539,7 +1545,7 @@ var Browser = {
    */
   getCountry: function browser_getCountry(cb) {
     this.country = this.DEFAULT_COUNTRY;
-    var getCountry = this.tvStore.get('countryEnv');
+    var getCountry = this.tvStore.get ? this.tvStore.get('countryEnv') : null;
     if(getCountry){
       Browser.country = getCountry;
       Browser.tvBlock.dataset.model = getCountry;
@@ -1570,7 +1576,7 @@ var Browser = {
         { 'COLOR': 'yellow', 'KEY_CODE': KeyEvent.DOM_VK_YELLOW }
       ]
     };
-    
+
     if(this.country == 'JP'){
       this.colorBar = COLOR_KEY_TYPE['JP'];
     }else{
@@ -1581,7 +1587,7 @@ var Browser = {
     return this.colorBar;
   },
 
-  switchCursorMode: function browser_switchCursorMode( mode ) { 
+  switchCursorMode: function browser_switchCursorMode( mode ) {
     this.debug("switch cursor new_mode = " + mode + " , current = " + this.cursorMode);
     if( this.cursorMode == null ) {
       this.cursorMode = mode;
@@ -1589,21 +1595,24 @@ var Browser = {
       this.cursorMode = mode;
     } else {
       return;
-    } 
-    var inputSet = window.navigator.panaInputDeviceSetting; 
-    Toolbar.clearDragMode(); 
-    if( mode ) { 
-      inputSet.setMouseMode('enable'); 
-      inputSet.setTouchPadMode('mouse'); 
-      inputSet.setRemoteArrowKeyMode('mouse'); 
-      // inputSet.setKeyboardArrowKeyMode('arrow-key'); 
-    } else { 
-      inputSet.setMouseMode('disable'); 
-      inputSet.setTouchPadMode('arrow-key'); 
-      inputSet.setRemoteArrowKeyMode('arrow-key'); 
-      // inputSet.setKeyboardArrowKeyMode('arrow-key'); 
-    } 
-  }, 
+    }
+    var inputSet = window.navigator.panaInputDeviceSetting;
+    Toolbar.clearDragMode();
+    if (!inputSet) {
+      return;
+    }
+    if( mode ) {
+      inputSet.setMouseMode('enable');
+      inputSet.setTouchPadMode('mouse');
+      inputSet.setRemoteArrowKeyMode('mouse');
+      // inputSet.setKeyboardArrowKeyMode('arrow-key');
+    } else {
+      inputSet.setMouseMode('disable');
+      inputSet.setTouchPadMode('arrow-key');
+      inputSet.setRemoteArrowKeyMode('arrow-key');
+      // inputSet.setKeyboardArrowKeyMode('arrow-key');
+    }
+  },
 
   /**
    * key hook
@@ -1643,7 +1652,7 @@ var Browser = {
     if(BrowserDialog.isDisplayed()) {
       BrowserDialog.handleKeyEvent(ev);
       this.preventDefaultForVideo(ev);
-      return; 
+      return;
     }
     if(AuthenticationDialog.isDisplayed()) {
       AuthenticationDialog.handleKeyEvent(ev);
@@ -1663,7 +1672,7 @@ var Browser = {
     if(Awesomescreen.isDisplayed()) {
       if(!Awesomescreen.handleKeyEvent(ev)){
         this.preventDefaultForVideo(ev);
-        return;      
+        return;
       }
     }
     if(SearchResult.isDisplayed()) {
@@ -1760,18 +1769,18 @@ var Browser = {
     case KeyEvent.DOM_VK_UP :
     case KeyEvent.DOM_VK_LEFT :
       if(this.currentInfo.dom.findAgain) {
-        this.currentInfo.dom.findAgain(true, true); 
+        this.currentInfo.dom.findAgain(true, true);
       }
       break;
     case KeyEvent.DOM_VK_DOWN :
     case KeyEvent.DOM_VK_RIGHT :
       if(this.currentInfo.dom.findAgain) {
-        this.currentInfo.dom.findAgain(false, true); 
+        this.currentInfo.dom.findAgain(false, true);
       }
       break;
     case KeyEvent.DOM_VK_RETURN :
       if(this.currentInfo.dom.selectLink) {
-        this.currentInfo.dom.selectLink(); 
+        this.currentInfo.dom.selectLink();
         this.stopAsrJumpMode();
       }
       break;
