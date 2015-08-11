@@ -144,8 +144,6 @@ var Browser = {
         this.initSearchUtil();
         // init settings list
         Settings.init();
-        // init ifilter list
-        Ifilter.init();
         // init Toolbar
         Toolbar.init();
 
@@ -246,11 +244,6 @@ var Browser = {
       }
     }
     if( Settings.isDialogSearchDisplayed() ) {
-      Awesomescreen.pointerImg.style.display = 'none';
-      document.activeElement.blur();
-    }
-    if( Ifilter.isDialogFuncDisplayed() ) {
-      Ifilter.blurFlag = true;
       Awesomescreen.pointerImg.style.display = 'none';
       document.activeElement.blur();
     }
@@ -1111,16 +1104,9 @@ var Browser = {
 
       case 'mozbrowserusernameandpasswordrequired':
         this.debug('mozbrowserusernameandpasswordrequired[' + tab.id + ']');
-        if( evt.detail.isProxy && Ifilter.currentFunc == Ifilter.FUNC_ON
-            && Ifilter.user_id != '' ){
-          console.log('ifilter proxy auth [' + Ifilter.user_id + ']');
-          evt.detail.authenticate( Ifilter.user_id, '' );
-        }
-        else {
-          tab.loading = false;
-          this.refreshBrowserParts();
-          AuthenticationDialog.handleEvent(evt, tab.id);
-        }
+        tab.loading = false;
+        this.refreshBrowserParts();
+        AuthenticationDialog.handleEvent(evt, tab.id);
         break;
 
       case 'mozbrowsershowmodalprompt':
@@ -1395,7 +1381,6 @@ var Browser = {
       AuthenticationDialog.cancelHandler();
     }
     if( Settings ) Settings.hide();
-    if( Ifilter ) Ifilter.hide();
     if( Awesomescreen ) Awesomescreen.allHidden();
     if( SearchResult ) SearchResult.hide();
   },
@@ -1661,11 +1646,6 @@ var Browser = {
     }
     if(Settings.isDisplayed()) {
       Settings.handleKeyEvent(ev);
-      this.preventDefaultForVideo(ev);
-      return;
-    }
-    if(Ifilter.isDisplayed()) {
-      Ifilter.handleKeyEvent(ev);
       this.preventDefaultForVideo(ev);
       return;
     }

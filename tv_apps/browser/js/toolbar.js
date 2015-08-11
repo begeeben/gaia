@@ -111,8 +111,6 @@ var Toolbar = {
         Awesomescreen.selectHistoryTab.bind(Awesomescreen));
     this.privateWindowBlock.addEventListener('mouseup',
         Browser.handlePrivateBrowsing.bind(Browser));
-    this.ifilterBlock.addEventListener('mouseup',
-        Ifilter.show.bind(Ifilter));
     this.settingsBlock.addEventListener('mouseup',
         Settings.show.bind(Settings));
 
@@ -129,15 +127,8 @@ var Toolbar = {
     this.tabsButtonBlock.dataset.colorbar = colorBar[2].COLOR;
     this.newTabButtonBlock.dataset.colorbar = colorBar[3].COLOR;
 
-    // ifilter is only supported Japan.
-    if(Browser.country != 'JP') {
-      this.ifilterBlock.classList.add('disable');
-      // li = 73px * 3(list) + 20px(hover) + 10px(padding)
-      this.menuBlock.style.height = 73 * 3 + 20 + 10 + 'px';
-    } else {
-      // li = 73px * 4(list) + 20px(hover) + 10px(padding)
-      this.menuBlock.style.height = 73 * 4 + 20 + 10 + 'px';
-    }
+    // li = 73px * 3(list) + 20px(hover) + 10px(padding)
+    this.menuBlock.style.height = 73 * 3 + 20 + 10 + 'px';
     Tooltip.init();
   },
 
@@ -198,8 +189,8 @@ var Toolbar = {
       'new-tab-button-block', 'new-tab-button',
       'menu-button-block', 'menu-button',
       'menu-block',
-      'history-block', 'private-window-block', 'ifilter-block', 'settings-block',
-      'history-tab', 'private-window-tab', 'ifilter-tab', 'settings-tab',
+      'history-block', 'private-window-block', 'settings-block',
+      'history-tab', 'private-window-tab', 'settings-tab',
       'mode-button-block',
       'mode-button-title', 'pan-cursor-button', 'pan-cursor-button-block',
       'pan-cursor-banner-message',
@@ -273,7 +264,7 @@ var Toolbar = {
    */
   showHideSidebar: function toolbar_showHideSidebar() {
     this.sidebarButtonBlock.blur();
-    // Hide Tooltip 
+    // Hide Tooltip
     Tooltip.hide();
 
     // Fade animation end event handler
@@ -541,7 +532,7 @@ var Toolbar = {
     Browser.currentInfo.zoom = this.zoomScale;
     Browser.currentInfo.dom.zoom(this.getZoomScale());
 
-    this.zoomBannerMessage.innerHTML = 
+    this.zoomBannerMessage.innerHTML =
         this.availableZoomScale[this.zoomScale].disp;
     if(!this.zoomBannerMessageBlock.classList.contains('visible')){
       this.zoomBannerMessageBlock.classList.add('visible');
@@ -582,7 +573,7 @@ var Toolbar = {
     Browser.currentInfo.zoom = this.zoomScale;
     Browser.currentInfo.dom.zoom(this.getZoomScale());
 
-    this.zoomBannerMessage.innerHTML = 
+    this.zoomBannerMessage.innerHTML =
         this.availableZoomScale[this.zoomScale].disp;
     if(!this.zoomBannerMessageBlock.classList.contains('visible')){
       this.zoomBannerMessageBlock.classList.add('visible');
@@ -610,9 +601,7 @@ var Toolbar = {
         ar.push(432); // default 432(540 / 1.25)
         ar.push(this.historyTab.offsetWidth);
         ar.push(this.privateWindowTab.offsetWidth);
-        if(Browser.country == 'JP') {
-          ar.push(this.ifilterTab.offsetWidth);
-        }
+
         ar.push(this.settingsTab.offsetWidth);
         this.menuBlock.style.minWidth = (Math.max.apply(null, ar) * 1.25) + 'px';
       }

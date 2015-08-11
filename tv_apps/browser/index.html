@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="style/tooltip.css">
     <link rel="stylesheet" href="style/search_result.css">
     <link rel="stylesheet" href="style/settings.css">
-    <link rel="stylesheet" href="style/ifilter.css">
 
     <!-- Localization -->
     <script type="text/javascript" src="shared/js/l10n.js"></script>
@@ -43,7 +42,6 @@
     <script defer="" src="js/tooltip.js"></script>
     <script defer="" src="js/search_result.js"></script>
     <script defer="" src="js/settings.js"></script>
-    <script defer="" src="js/ifilter.js"></script>
     <script defer="" src="js/remote.js"></script>
   </head>
 
@@ -444,7 +442,6 @@
                 <div>
                   <li id="history-block"><a id="history-tab" href="#" data-l10n-id="LT_SE_HISTORY">History</a></li>
                   <li id="private-window-block"><a id="private-window-tab" href="#" data-l10n-id="WB_LT_TIPS_NEW_PRIVATE_WINDOW">New private window</a></li>
-                  <li id="ifilter-block"><a id="ifilter-tab" href="#">フィルタリング設定</a></li>
                   <li id="settings-block"><a id="settings-tab" href="#" data-l10n-id="LT_APPS_SETTINGS">Settings</a></li>
                 </div>
               </ul>
@@ -707,55 +704,6 @@
           </div>
         </div>
         <div id="settings-banner-message"></div>
-      </div>
-
-      <!-- i-filter -->
-      <div role="region" id="ifilter-list" class="skin-organic">
-        <div id="ifilter-list-area">
-          <div id="ifilter-header">
-            <p id="ifilter-header-title">フィルタリング設定</p>
-            <div id="ifilter-header-exp">
-              <p id="ifilter-header-exp1">フィルタリング機能とは、お子さまにブラウザで有害サイトを</p>
-              <br>
-              <p id="ifilter-header-exp2">見せないようにするための機能です。</p>
-            </div>
-          </div>
-          <div id="ifilter-list-item">
-            <div id="ifilter-offer">
-              <p id="ifilter-offer-title">申し込み手続き</p>
-            </div>
-            <div id="ifilter-func">
-              <p id="ifilter-func-title">フィルタリング機能</p>
-              <p id="ifilter-func-content"></p>
-            </div>
-            <div id="ifilter-server">
-              <p id="ifilter-server-title">サーバアドレス</p>
-              <p id="ifilter-server-content"></p>
-            </div>
-            <div id="ifilter-port">
-              <p id="ifilter-port-title">ポート番号</p>
-              <p id="ifilter-port-content"></p>
-            </div>
-            <div id="ifilter-id">
-              <p id="ifilter-id-title">ユーザーID</p>
-              <p id="ifilter-id-content"></p>
-            </div>
-          </div>
-        </div>
-        <div id="ifilter-dialog" class="hidden">
-          <div id="ifilter-dialog-func" class="hidden">
-            <div id="ifilter-dialog-func-header">
-              <p id="ifilter-dialog-func-header-title">フィルタリング機能</p>
-            </div>
-            <div id="ifilter-dialog-func-select">
-              <div id="ifilter-dialog-func-select-list"></div>
-            </div>
-            <div id="ifilter-dialog-func-button">
-              <button id="ifilter-dialog-func-cancel" data-l10n-id="LT_CANCEL">Cancel</button>
-              <button id="ifilter-dialog-func-ok" data-l10n-id="LT_WB_OK">OK</button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- loading -->

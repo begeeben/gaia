@@ -622,23 +622,23 @@ input::-moz-focus-inner {
 #bookmark-button[data-isbookmark="true"] #bookmark-on-svg {
   visibility: visible;
 }
-#bookmark-button[data-isbookmark="false"] #bookmark-off-svg { 
+#bookmark-button[data-isbookmark="false"] #bookmark-off-svg {
   visibility: visible;
 }
-#main-block[data-mode="cursor"] #bookmark-button[data-isbookmark="true"] .bookmark-button-path { 
+#main-block[data-mode="cursor"] #bookmark-button[data-isbookmark="true"] .bookmark-button-path {
   fill: #00caf2;
 }
-#main-block[data-mode="cursor"] #bookmark-button[data-isbookmark="false"] .bookmark-button-path { 
+#main-block[data-mode="cursor"] #bookmark-button[data-isbookmark="false"] .bookmark-button-path {
   fill: #5f6368;
 }
-#bookmark-button-block:hover #bookmark-button[data-isbookmark="true"] .bookmark-button-path { 
+#bookmark-button-block:hover #bookmark-button[data-isbookmark="true"] .bookmark-button-path {
   fill: #00caf2;
 }
-#bookmark-button-block:hover #bookmark-button[data-isbookmark="false"] .bookmark-button-path { 
+#bookmark-button-block:hover #bookmark-button[data-isbookmark="false"] .bookmark-button-path {
   fill: #000000;
 }
 #bookmark-button-block:active #bookmark-button[data-isbookmark="true"] .bookmark-button-path,
-#bookmark-button-block:active #bookmark-button[data-isbookmark="false"] .bookmark-button-path { 
+#bookmark-button-block:active #bookmark-button[data-isbookmark="false"] .bookmark-button-path {
   fill: #00caf2;
 }
 
@@ -752,9 +752,6 @@ input::-moz-focus-inner {
 }
 #menu-block li:last-child {
   /* border-bottom: 0px; */
-}
-#ifilter-block.disable {
-  display: none !important;
 }
 
 #menu-block li:hover {
@@ -949,19 +946,19 @@ input::-moz-focus-inner {
   height: 100%;
   border-radius: 50%;
   animation-name: gaia-loading-animation;
-  animation-iteration-count: infinite;       
+  animation-iteration-count: infinite;
   animation-timing-function: cubic-bezier(0, 0.64, 0.46, 0.46);
-  animation-duration: 2000ms;                
-  background-color: #00CAF2;                 
-}                                            
-.circle-2 {                                  
-  animation-delay: 395ms;                    
-}                                            
-@-moz-keyframes gaia-loading-animation {     
+  animation-duration: 2000ms;
+  background-color: #00CAF2;
+}
+.circle-2 {
+  animation-delay: 395ms;
+}
+@-moz-keyframes gaia-loading-animation {
   0% {-moz-transform: scale(0); opacity: 0.9;}
   40% {-moz-transform: scale(1.4); opacity: 0;}
   100% {-moz-transform: scale(2); opacity: 0;}
-}                                            
+}
 
 #loading-icon.visible {
   display: table;
@@ -1062,7 +1059,7 @@ input::-moz-focus-inner {
   pointer-events: none;
   z-index: 110;
 }
- 
+
 @-moz-keyframes s-c {
   0% {-moz-transform: scale(1.2);}
   60% {-moz-transform: scale(1.2);}
@@ -1085,7 +1082,7 @@ input::-moz-focus-inner {
   pointer-events: none;
   z-index: 109;
 }
-   
+
 #bookmark-button-anime[data-anime="start"] {
   display: block;
   -moz-animation-name: u-d, r-l;
