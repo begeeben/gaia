@@ -85,7 +85,6 @@ var Browser = {
 
   // tv info
   tuner: null,
-  tvStore: null,
   lastSource: null,
   inputs: null,
 
@@ -119,9 +118,6 @@ var Browser = {
     // init bookmark dialog
     Awesomescreen.init();
 
-    // tv info
-    this.tvStore = window.navigator.panaSystem ?
-                            window.navigator.panaSystem.tvstore : {};
     // window.navigator.inputPortManager.getInputPorts().then(inputs => {
     //   Browser.inputs = inputs;
     // });
@@ -312,15 +308,10 @@ var Browser = {
           // Full screen
           Browser.sideBlock.dataset.sidebar = 'false';
           Browser.mainBlock.dataset.sidebar = 'false';
-          // hidden tv
-          var video = document.getElementById('tv');
-          video.mozSrcObject = null;
         } else {
           // Disp side screen
           Browser.sideBlock.dataset.sidebar = 'true';
           Browser.mainBlock.dataset.sidebar = 'true';
-          // init tv
-          Browser.initTV();
           if(!result || result != 'side') {
             // save screen mode
             BrowserDB.updateSetting('side', 'screen_mode');
@@ -376,70 +367,6 @@ var Browser = {
     }).bind(this));
   },
 
-  /**
-   * init TV
-   */
-  initTV: function browser_initTV() {
-    var self = this;
-    var tv = window.navigator.mozTV;
-    var video = document.getElementById('tv');
-
-    if (!tv) {
-      console.log('===== failed to get mozTV. check permission. =====');
-      return;
-    }
-    video.focus();
-
-    tv.getTuners().then(function onsuccess(tuners) {
-      if (tuners.length > 0) {
-        self.tuner = tuners[0];
-        video.mozSrcObject = tuners[0].stream;
-        var source = JSON.parse(self.tvStore.get('lastMainSource'));
-        var input = self.getInputPort(source.type, source.idx);
-        self.lastSource = source.type;
-        if (input) {
-          self.fireInputChangedEvent(input, source.idx);
-        } else {
-          self.fireChannelChangedEvent(self.tuner.channel);
-        }
-        self.tvStore.addObserver('lastMainSource',
-          self.onSourceChanged.bind(self));
-        self.tuner.addEventListener('channelchanged',
-          self.onChannelChanged.bind(self), false);
-      }
-    }, function onerror(error) {
-      console.log('===== failed to getTuners. ', error);
-    });
-  },
-
-  setTvInfo: function browser_setTvInfo(param) {
-    if(param.name) {
-      switch(param.inputType) {
-      case 'arib-terr':
-        this.tvInfo.textContent = _('LT_CH_DIGITAL') + ' ' + param.name;
-        break;
-      case 'arib-bs':
-        this.tvInfo.textContent = _('LT_CH_BS') + ' ' + param.name;
-        break;
-      case 'arib-cs1':
-        this.tvInfo.textContent = _('LT_CH_CS1') + ' ' + param.name;
-        break;
-      case 'arib-cs2':
-        this.tvInfo.textContent = _('LT_CH_CS2') + ' ' + param.name;
-        break;
-      case 'input':
-        this.tvInfo.textContent = _('LT_INPUT') + ' ' + param.name;
-        break;
-      default:
-        this.tvInfo.textContent = param.name;
-        break;
-      }
-    } else if(param.nameLT) {
-      this.tvInfo.textContent = _(param.nameLT);
-    } else {
-      this.tvInfo.textContent = '';
-    }
-  },
   getInputPort: function browser_getInputPort(type, port) {
     if (this.inputs) {
       var id = type + '://' + port;
@@ -451,53 +378,7 @@ var Browser = {
     }
     return false;
   },
-  fireInputChangedEvent: function browser_fireInputChangedEvent(input, port) {
-    var param = {};
-    if (input) {
-      var names = this.getInputLabel(input.type, port);
-      param.hash = input.id;
-      param.name = names.name;
-      param.nameLT = names.nameLT;
-      param.inputType = input.type;
-      if (input.type === 'av') {
-        if (input.isScartInput) {
-          param.inputSubType = 'scart';
-        }
-        else {
-          param.inputSubType = input.avInputSrc;
-        }
-      }
-      else {
-        param.inputSubType = null;
-      }
-    }
-    this.setTvInfo(param);
-  },
-  fireChannelChangedEvent: function browser_fireChannelChangedEvent(channel) {
-    var param = {};
-    if (channel && channel.channelId) {
-      param.hash = channel.channelId;
-      param.name = channel.number + ' ' + channel.sname;
-      param.nameLT = null;
-      param.inputType = channel.sourceType;
-      param.inputSubType = null;
-    }
-    this.setTvInfo(param);
-  },
-  onSourceChanged: function browser_onSourceChanged() {
-    if (this.tvStore) {
-      var source = JSON.parse(this.tvStore.get('lastMainSource'));
-      var input = this.getInputPort(source.type, source.idx);
-      this.lastSource = source.type;
-      if (input) {
-        this.fireInputChangedEvent(input, source.idx);
-      }
-    }
-  },
-  onChannelChanged: function browser_onChannelChanged(event) {
-    var channel = event.channel;
-    this.fireChannelChangedEvent(channel);
-  },
+
   getInputPortNum: function browser_getInputPortNum(type) {
     var num = 0;
     if (this.inputs) {
@@ -509,92 +390,6 @@ var Browser = {
       }
     }
     return num;
-  },
-  getInputLabel: function browser_getInputLabel(type, port) {
-    var id = type + port;
-    var labelData = this.tvStore.get('inputLabelName.' + id);
-    var portnum = this.getInputPortNum(type);
-    var result = {
-      name: null,
-      nameLT: null
-    };
-
-    switch (labelData) {
-    case 'LT_VCR':
-    case 'LT_DVD':
-    case 'LT_CABLE':
-    case 'LT_INP_SAT':
-    case 'LT_NETWORK':
-    case 'LT_PVR':
-    case 'LT_GAME':
-    case 'LT_STB':
-    case 'LT_BD':
-    case 'LT_TERR':
-    case 'LT_USER_INPUT':
-    case 'LT_DVD_REC':
-    case 'LT_DVR':
-    case 'LT_HOME_THTR':
-    case 'LT_RECEIVER':
-    case 'LT_COMPUTER':
-    case 'LT_MEDIA_CTR':
-    case 'LT_MEDIA_EXT':
-    case 'LT_CAMERA':
-    case 'LT_MONITOR2':
-    case 'LT_AUX':
-    case 'LT_OTHER2':
-    case 'LT_PC':
-    case 'LT_DVD1':
-    case 'LT_DVD2':
-    case 'LT_DISK':
-    case 'LT_DIGA':
-    case 'LT_HDD_RECORDER':
-      result.nameLT = labelData;
-      break;
-    case 'LT_DEFAULT':
-    case 'LT_LABEL_NOT_USED':
-    case 'LT_TITEL_NO_DISPLAY':
-      {
-        switch (id) {
-        case 'hdmi1':
-          if (portnum === 1) {
-            result.nameLT = 'LT_HDMI';
-          } else {
-            result.nameLT = 'LT_HDMI1';
-          }
-          break;
-        case 'hdmi2':
-          result.nameLT = 'LT_HDMI2';
-          break;
-        case 'hdmi3':
-          result.nameLT = 'LT_HDMI3';
-          break;
-        case 'hdmi4':
-          result.nameLT = 'LT_HDMI4';
-          break;
-        case 'av1':
-          if (portnum === 1) {
-            result.nameLT = 'LT_AV_COMPONENT';
-          } else {
-            result.nameLT = 'LT_AV1_COMPONENT1';
-          }
-          break;
-        case 'av2':
-          result.nameLT = 'LT_AV2_COMPONENT2';
-          break;
-        case 'displayport1':
-          result.nameLT = 'LT_DISPLAYPORT';
-          break;
-        default:
-          result.nameLT = 'LT_DEFAULT'; // error case
-          break;
-        }
-      }
-      break;
-    default:
-      result.name = labelData; // free input
-      break;
-    }
-    return result;
   },
 
   /**
@@ -1441,72 +1236,6 @@ var Browser = {
             break;
         }
         break;
-      case 'pana_apps_launch':
-      case 'pana_apps_launch_inline':
-        this.launch_from = activity.source.data.arg.launch_from || 0;
-        this.debug( ' launch_from = ' + this.launch_from );
-        switch( this.launch_from ) {
-          case 0: // from ICON
-            this.start_page_url = '';
-            if( this.currentInfo ) {
-              this.launch_from = -1;
-            }
-            break;
-          case 1: // from BOOKMARK(WEBLINK but not used...)
-          case 5: // from URL_DIRECT
-            var url = this.getUrlFromInput( activity.source.data.arg.url );
-            this.debug( ' url = ' + url );
-            this.start_page_url = url;
-            if( this.currentInfo ) {
-              this.variousWindowErase();
-              this.launch_from = -1;
-              if(( this.currentInfo.url != null ) && ( this.currentInfo.url != '' )) {
-                var evt = new Object();
-                evt.detail = { url: url, frameElement: null };
-                Awesomescreen.openNewTab(evt);
-              } else {
-                this.navigate(url);
-              }
-            }
-            break;
-          case 2: // SMARTPHONE
-            break;
-          case 3: // VOICE_SEARCH
-          case 4: // HOME_SEARCH
-            for (var i=0; i<this.categoryTbl.length; i++) {
-              if (this.categoryTbl[i].category == activity.source.data.arg.category || 0) {
-                this.category = this.categoryTbl[i].id;
-              }
-            }
-            this.keyword  = activity.source.data.arg.keyword || '';
-            this.debug( ' category = ' + this.category +
-                         ' , keyword = ' + this.keyword );
-            if (activity.source.data.returnApp) {
-              this.returnApp = activity.source.data.returnApp;
-            }
-            if (activity.source.data.returnOpt) {
-              this.returnOpt = activity.source.data.returnOpt;
-            }
-            if( this.currentInfo ) {
-              if(( this.category > 0 ) && ( this.keyword != '' )) {
-                var searchList = SearchUtil.getCurrentSearchUrl();
-                var url = searchList[ this.category - 1 ] + this.keyword;
-                this.debug(' search url = ' + url);
-
-                this.variousWindowErase();
-                this.launch_from = -1;
-                if(( this.currentInfo.url != null ) && ( this.currentInfo.url != '' )) {
-                  var evt = new Object();
-                  evt.detail = { url: url, frameElement: null };
-                  Awesomescreen.openNewTab(evt);
-                } else {
-                  this.navigate(url);
-                }
-              }
-            }
-            break;
-        }
-        break;
     }
   },
 
@@ -1515,7 +1244,8 @@ var Browser = {
    */
   getLanguage: function browser_getLanguage() {
     this.language = this.DEFAULT_LANG;
-    var getLang = this.tvStore.get ? this.tvStore.get('languageEnv') : null;
+    // XXX: replace this with navigator.language
+    var getLang = null;
     if(getLang){
       var lang = getLang;
       Browser.language = lang;
@@ -1530,7 +1260,8 @@ var Browser = {
    */
   getCountry: function browser_getCountry(cb) {
     this.country = this.DEFAULT_COUNTRY;
-    var getCountry = this.tvStore.get ? this.tvStore.get('countryEnv') : null;
+    // XXX: replace this with navigator.language
+    var getCountry = null;
     if(getCountry){
       Browser.country = getCountry;
       Browser.tvBlock.dataset.model = getCountry;
@@ -1820,8 +1551,7 @@ document.addEventListener('visibilitychange', function browser_VisivilityChange(
     Browser.isSuspend = true;
     Browser.variousWindowErase();
     if(Browser.sideBlock.dataset.sidebar == 'true'){
-      var video = document.getElementById('tv');
-      video.mozSrcObject = null;
+      // XXX: open side block
     }
     if( Browser.currentInfo ) Browser.refreshBrowserParts();
     Remote.suspend();
@@ -1831,7 +1561,6 @@ document.addEventListener('visibilitychange', function browser_VisivilityChange(
     if(Browser.sideBlock.dataset.sidebar == 'true') {
       var video = document.getElementById('tv');
       if(video.mozSrcObject == null) {
-        Browser.initTV();
       }
     }
     //Browser.hashChange();

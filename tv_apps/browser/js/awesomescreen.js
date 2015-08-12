@@ -1676,14 +1676,6 @@ var Awesomescreen = {
 
   isSetupLockActive: function awesomescreen_isSetupLockActive() {
     return false;
-
-    var tvstore = navigator.panaSystem.tvstore;
-    if(tvstore.get('smartLock.enable') === true &&
-       tvstore.get('smartLock.setupLock') === true) {
-      return true;
-    }else{
-      return false;
-    }
   },
 
   dialogShow: function awesomescreen_dialogShow(type) {
