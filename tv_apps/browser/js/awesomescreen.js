@@ -1219,44 +1219,26 @@ var Awesomescreen = {
     switch(type){
       case this.DEFAULT_BOOKMARK:
         elementIDs = [this.pinhomeButton, this.removeBookmarkButton, this.editButton];
-        if (this.isSetupLockActive()) {
-          elementIDs.splice(0,1);
-          this.focusList.push(this.removeBookmarkButton);
-          this.focusList.push(this.editButton);
-          this.focusPos = this.focusList.length - 2;
-        }else{
-          this.focusList.push(this.pinhomeButton);
-          this.focusList.push(this.removeBookmarkButton);
-          this.focusList.push(this.editButton);
-          this.focusPos = this.focusList.length - 3;
-        }
+        this.focusList.push(this.pinhomeButton);
+        this.focusList.push(this.removeBookmarkButton);
+        this.focusList.push(this.editButton);
+        this.focusPos = this.focusList.length - 3;
         this.elementSetDisplayBlock(elementIDs);
         this.elementSetTabindex(elementIDs);
         break;
 
       case this.DEFAULT_HISTORY:
         elementIDs = [this.pinhomeButton, this.clhistoryButton, this.removeButton];
-        if (this.isSetupLockActive()) {
-          elementIDs.splice(0,1);
-
-          this.focusList.push(this.removeButton);
-          this.focusList.push(this.clhistoryButton);
-          this.focusPos = this.focusList.length - 2;
-        }else{
-          this.focusList.push(this.pinhomeButton);
-          this.focusList.push(this.clhistoryButton);
-          this.focusList.push(this.removeButton);
-          this.focusPos = this.focusList.length - 3;
-        }
+        this.focusList.push(this.pinhomeButton);
+        this.focusList.push(this.clhistoryButton);
+        this.focusList.push(this.removeButton);
+        this.focusPos = this.focusList.length - 3;
         this.elementSetDisplayBlock(elementIDs);
         this.elementSetTabindex(elementIDs);
         break;
 
       case this.DEFAULT_TOPSITE:
         elementIDs = [this.pinhomeButton, this.sethomeButton, this.removeTopsiteButton];
-        if (this.isSetupLockActive()) {
-          elementIDs.splice(0,1);
-        }
         this.elementSetDisplayBlock(elementIDs);
         this.elementSetTabindex(elementIDs);
         this.focusList.push(this.pinhomeButton);
@@ -1330,10 +1312,6 @@ var Awesomescreen = {
            this.renameConfirmButton, this.sethomeButton, this.removeBookmarkButton
         ];
 
-    if (this.isSetupLockActive()) {
-      elementIDs.splice(8,1);
-    }
-
     // Loop and add element with camel style name to Modal Dialog attribute.
     this.elementSetTabindexClear(elementIDs);
 
@@ -1343,10 +1321,6 @@ var Awesomescreen = {
            this.pinhomeButton, this.removeButton, this.removeConfirmButton, this.removeTopsiteButton,
            this.renameConfirmButton, this.sethomeButton, this.removeBookmarkButton
         ];
-
-    if (this.isSetupLockActive()) {
-      elementIDs2.splice(8,1);
-    }
 
     // Loop and add element with camel style name to Modal Dialog attribute.
     this.elementSetDisplayNone(elementIDs2);
@@ -1673,10 +1647,6 @@ var Awesomescreen = {
      }
      Browser.refreshBrowserParts();
    },
-
-  isSetupLockActive: function awesomescreen_isSetupLockActive() {
-    return false;
-  },
 
   dialogShow: function awesomescreen_dialogShow(type) {
     Awesomescreen.dialogArea.style.opacity = '1';
