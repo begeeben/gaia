@@ -2600,19 +2600,6 @@ var Awesomescreen = {
              break;
            case this.isDisplayedTop() && !(this.isDisplayedTab()):
              if(hoverElem == this.topSites){
-               var tv = window.navigator.mozTV;
-               if(tv) {
-                 var video = document.getElementById('tv');
-                 var curElement = document.activeElement;
-                 if(curElement != video) {
-                   video.focus();
-                   var newEvt = document.createEvent("KeyboardEvent");
-                   newEvt.initKeyEvent(ev.type, ev.canBubble, ev.cancelable,
-                       ev.view, ev.ctrlKey, ev.altKey, ev.shiftKey,
-                       ev.metaKey, ev.keyCode, ev.charCode);
-                   video.dispatchEvent(newEvt);
-                 }
-               }
                return true;
              }
              if( (this.selectList) && (this.selectList.className.contains('top-site-item')) ) {

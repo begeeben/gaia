@@ -291,13 +291,6 @@ var Toolbar = {
     Browser.fadeBase.addEventListener('transitionend', fade_event, false);
     Browser.fadeBase.classList.toggle('fade');
     this.sidebarButtonBlock.dataset.fade='true';
-
-    if(Browser.sideBlock.dataset.sidebar == 'true'){
-      var video = document.getElementById('tv');
-      video.mozSrcObject = null;
-    }else{
-      Browser.initTV();
-    }
   },
 
   /**
@@ -661,7 +654,6 @@ var Toolbar = {
     if(Browser.getCursorPanMode() == 'cursor') {
       Browser.setCursorPanMode('pan');
       this.modeButtonTitle.innerHTML = _('WB_LT_PAN_MODE');
-      window.navigator.panaInputDeviceSetting.setDragMode('on');
       this.panCursorBannerMessage.innerHTML = _('WB_LT_SWITCH_PAN_MODE');
     } else {
       this.clearDragMode();
@@ -677,7 +669,6 @@ var Toolbar = {
     if(Browser.getCursorPanMode() == 'pan') {
       Browser.setCursorPanMode('cursor');
       this.modeButtonTitle.innerHTML = _('WB_LT_CURSOR_MODE');
-      window.navigator.panaInputDeviceSetting.setDragMode('off');
       this.panCursorBannerMessage.innerHTML = _('WB_LT_SWITCH_CURSOR_MODE');
     }
   },

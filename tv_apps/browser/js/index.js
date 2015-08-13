@@ -83,11 +83,6 @@ var Browser = {
   // Suspend flag
   isSuspend: false,
 
-  // tv info
-  tuner: null,
-  lastSource: null,
-  inputs: null,
-
   /**
    * Debug
    */
@@ -117,10 +112,6 @@ var Browser = {
 
     // init bookmark dialog
     Awesomescreen.init();
-
-    // window.navigator.inputPortManager.getInputPorts().then(inputs => {
-    //   Browser.inputs = inputs;
-    // });
 
     // init database
     BrowserDB.init((function() {
@@ -365,31 +356,6 @@ var Browser = {
       // display search bar engine name
       Toolbar.setSearchEngine();
     }).bind(this));
-  },
-
-  getInputPort: function browser_getInputPort(type, port) {
-    if (this.inputs) {
-      var id = type + '://' + port;
-      for (var i = 0; i < this.inputs.length; i++) {
-        if (this.inputs[i].id == id) {
-          return this.inputs[i];
-        }
-      }
-    }
-    return false;
-  },
-
-  getInputPortNum: function browser_getInputPortNum(type) {
-    var num = 0;
-    if (this.inputs) {
-      var i;
-      for (i = 0; i < this.inputs.length; i++) {
-        if (this.inputs[i].type === type) {
-          num++;
-        }
-      }
-    }
-    return num;
   },
 
   /**
@@ -728,7 +694,7 @@ var Browser = {
     var elementIDs = [
       'fade-base',
 
-      'side-block', 'tv-block', 'tv-info',
+      'side-block',
       'main-block',
       'web-block',
 
@@ -1312,22 +1278,8 @@ var Browser = {
     } else {
       return;
     }
-    var inputSet = window.navigator.panaInputDeviceSetting;
+
     Toolbar.clearDragMode();
-    if (!inputSet) {
-      return;
-    }
-    if( mode ) {
-      inputSet.setMouseMode('enable');
-      inputSet.setTouchPadMode('mouse');
-      inputSet.setRemoteArrowKeyMode('mouse');
-      // inputSet.setKeyboardArrowKeyMode('arrow-key');
-    } else {
-      inputSet.setMouseMode('disable');
-      inputSet.setTouchPadMode('arrow-key');
-      inputSet.setRemoteArrowKeyMode('arrow-key');
-      // inputSet.setKeyboardArrowKeyMode('arrow-key');
-    }
   },
 
   /**
@@ -1436,20 +1388,6 @@ var Browser = {
 
     default:
       if(Browser.sideBlock.dataset.sidebar == 'true'){
-        // fall through other key events to side TV
-        var tv = window.navigator.mozTV;
-        if(tv) {
-          var video = document.getElementById('tv');
-          var curElement = document.activeElement;
-          if(curElement != video) {
-            video.focus();
-            var newEvt = document.createEvent("KeyboardEvent");
-            newEvt.initKeyEvent(ev.type, ev.canBubble, ev.cancelable,
-                ev.view, ev.ctrlKey, ev.altKey, ev.shiftKey,
-                ev.metaKey, ev.keyCode, ev.charCode);
-            video.dispatchEvent(newEvt);
-          }
-        }
         this.preventDefaultForVideo(ev);
       }
       break;
@@ -1559,9 +1497,7 @@ document.addEventListener('visibilitychange', function browser_VisivilityChange(
     Browser.debug('browser resume...');
     Browser.isSuspend = false;
     if(Browser.sideBlock.dataset.sidebar == 'true') {
-      var video = document.getElementById('tv');
-      if(video.mozSrcObject == null) {
-      }
+      // XXX: open side block
     }
     //Browser.hashChange();
     Remote.init();
