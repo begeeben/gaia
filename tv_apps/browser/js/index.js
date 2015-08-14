@@ -77,9 +77,6 @@ var Browser = {
   returnApp: null,
   returnOpt: null,
 
-  // ASR jump mode
-  asrJumpMode: false,
-
   // Suspend flag
   isSuspend: false,
 
@@ -145,9 +142,6 @@ var Browser = {
       }).bind(this));
     }).bind(this));
 
-    // init ASR
-    this.initAsr();
-
     // init authentication dialog
     AuthenticationDialog.init();
 
@@ -164,9 +158,6 @@ var Browser = {
   },
 
   mouseMove: function browser_mouseMove(ev) {
-    if(this.asrJumpMode) {
-      this.stopAsrJumpMode();
-    }
 
     if(Toolbar.sidebarButtonBlock.dataset.fade == 'true') {
       Toolbar.sidebarButtonBlock.dataset.fade = 'false';
@@ -356,172 +347,6 @@ var Browser = {
       // display search bar engine name
       Toolbar.setSearchEngine();
     }).bind(this));
-  },
-
-  /**
-   * init ASR
-   */
-  initAsr: function browser_initAsr() {
-    if(!window.navigator.mozAsr){
-      console.log('***** Voice Control API (ASR) is Disabled *****');
-      return;
-    }
-    window.navigator.mozAsr.onmicstart = this.startAsr.bind(this);
-    window.navigator.mozAsr.onmicend = this.endAsr.bind(this);
-    window.navigator.mozSetMessageHandler('asr-event',
-        this.handleAsrEvent.bind(this));
-  },
-  // Start ASR
-  startAsr: function browser_startAsr() {
-    this.debug('***** Voice Control API (ASR) START *****');
-  },
-  // End ASR
-  endAsr: function browser_endAsr() {
-    this.debug('***** Voice Control API (ASR) END *****');
-  },
-
-  /**
-   * Handle ASR Event
-   */
-  handleAsrEvent: function broser_handleAsrEvent(message) {
-    if(message.appli_id != 'browser') {
-      return;
-    }
-
-    // Hide All
-    if(Settings.isDisplayed()) {
-      Settings.hide();
-    }
-    if(SearchResult.isDisplayed()) {
-      SearchResult.hide();
-    }
-    if(BrowserDialog.isDisplayed()) {
-      BrowserDialog.cancelDialog();
-    }
-    if(AuthenticationDialog.isDisplayed()) {
-      AuthenticationDialog.cancelHandler();
-    }
-    if(Awesomescreen.isDisplayedList()) {
-      Awesomescreen.listHidden();
-    }
-    if(Awesomescreen.isDisplayedDialog()) {
-      Awesomescreen.dialogHidden();
-    }
-    if(Awesomescreen.isDisplayedTab()) {
-      Awesomescreen.tabviewHidden();
-    }
-
-    var param = message.param;
-
-    if(param.action) {
-      if(Awesomescreen.isDisplayedTop()) return;
-      switch(param.action.id) {
-      case 'previous_page':
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
-        }
-        Toolbar.goBack();
-        break;
-      case 'next_page':
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
-        }
-        Toolbar.goForward();
-        break;
-      case 'scroll_up':
-      case 'page_up':
-        Browser.currentInfo.dom.scrollBy(0, -500);
-        break;
-      case 'scroll_down':
-      case 'page_down':
-        Browser.currentInfo.dom.scrollBy(0, 500);
-        break;
-      case 'scroll_left':
-      case 'page_left':
-        Browser.currentInfo.dom.scrollBy(-500, 0);
-        break;
-      case 'scroll_right':
-      case 'page_right':
-        Browser.currentInfo.dom.scrollBy(500, 0);
-        break;
-      case 'pin_to_home':
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
-        }
-        Awesomescreen.pinToHome();
-        break;
-      case 'zoom_in':
-        Toolbar.clickZoomButtonBlock();
-        break;
-      case 'zoom_out':
-        Toolbar.zoomOut();
-        break;
-      case 'add_bookmark':
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
-        }
-        Browser.addBookmark();
-        break;
-      case 'reload':
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
-        }
-        Toolbar.clickAddressButton();
-       break;
-      case 'change_screen':
-        Toolbar.showHideSidebar();
-        break;
-      case 'private_browsing':
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
-        }
-        Browser.handlePrivateBrowsing();
-        break;
-      case 'url_jump':
-        if(Awesomescreen.isDisplayedTop()) return;
-        if(param.keywords) {
-          if(this.currentInfo.dom.highlight) {
-            this.currentInfo.dom.highlight(false);
-            this.currentInfo.dom.highlight(true, param.keywords[0].word, true);
-            this.asrJumpMode = true;
-            this.switchCursorMode(false);
-          }
-        }
-        break;
-      default:
-        this.debug('asr message unknown id = ', param.action.id);
-        break;
-      }
-    } else if(param.browser_param) {
-      if(this.asrJumpMode) {
-        this.stopAsrJumpMode();
-      }
-      switch(param.browser_param.id) {
-      case 'internet':
-      case 'image':
-      case 'video':
-      case 'news':
-      case 'maps':
-      //case 'youtube':
-        this.keywordSearch(param);
-        break;
-      default:
-        this.debug('asr message unknown id = ', param.browser_param.id);
-        break;
-      }
-    } else if(param.keywords) {
-      if(this.asrJumpMode) {
-        this.stopAsrJumpMode();
-      }
-      this.keywordSearch({
-          'browser_param': { 'id': 'internet' },
-          'keywords': [
-              { 'word': param.keywords[0].word }
-          ]
-      });
-    } else {
-      this.debug('asr unknown message');
-    }
   },
   getLanguageUrl: function browser_getLanguageUrl() {
     var url_str = '';
@@ -743,9 +568,6 @@ var Browser = {
           } else {
             Remote.sendSmaphoSetUrl(true);
           }
-        }
-        if(this.asrJumpMode) {
-          this.stopAsrJumpMode();
         }
         break;
 
@@ -1304,11 +1126,6 @@ var Browser = {
   },
   keyHook: function browser_keyHook(ev) {
     this.debug('kc = ' + ev.keyCode);
-    if(this.asrJumpMode) {
-      this.asrKeyHook(ev);
-      this.preventDefaultForVideo(ev);
-      return;
-    }
 
     if(ev.keyCode == KeyEvent.DOM_VK_BACK_SPACE) {
       if(Toolbar.toolbarPanel.dataset.menu == 'show') {
@@ -1409,50 +1226,6 @@ var Browser = {
     }
 
  },
-
-  /**
-   * ASR key hook(jump mode)
-   */
-  asrKeyHook: function browser_asrKeyHook(ev) {
-    switch (ev.keyCode) {
-    case KeyEvent.DOM_VK_UP :
-    case KeyEvent.DOM_VK_LEFT :
-      if(this.currentInfo.dom.findAgain) {
-        this.currentInfo.dom.findAgain(true, true);
-      }
-      break;
-    case KeyEvent.DOM_VK_DOWN :
-    case KeyEvent.DOM_VK_RIGHT :
-      if(this.currentInfo.dom.findAgain) {
-        this.currentInfo.dom.findAgain(false, true);
-      }
-      break;
-    case KeyEvent.DOM_VK_RETURN :
-      if(this.currentInfo.dom.selectLink) {
-        this.currentInfo.dom.selectLink();
-        this.stopAsrJumpMode();
-      }
-      break;
-    case KeyEvent.DOM_VK_BACK_SPACE:
-      this.stopAsrJumpMode();
-      break;
-
-    default:
-      this.stopAsrJumpMode();
-      break;
-    }
-  },
-
-  /**
-   * Stop asr jump mode
-   */
-  stopAsrJumpMode: function browser_stopAsrJumpMode() {
-    if(this.currentInfo.dom.highlight) {
-      this.currentInfo.dom.highlight(false);
-    }
-    this.asrJumpMode = false;
-    this.switchCursorMode(true);
-  },
 
   /**
    * location hash change event

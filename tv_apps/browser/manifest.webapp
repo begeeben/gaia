@@ -231,9 +231,6 @@
       }
     }
   },
-  "messages": [
-     { "asr-event": "/index.html" }
-  ],
   "widgets": {
     "mywidget1": {
       "name": "Web Clip",
