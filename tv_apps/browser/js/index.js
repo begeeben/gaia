@@ -26,15 +26,6 @@ var Browser = {
   waitingActivities: [],
   hasLoaded: false,
 
-  // < launch_from >
-  // 0 : ICON
-  // 1 : BOOKMARK
-  // 2 : SMARTPHONE
-  // 3 : VOICE_SEARCH
-  // 4 : HOME_SEARCH
-  // 5 : URL_DIRECT
-  launch_from: 0,
-
   // < category >
   // 1 : web search
   // 2 : image search
@@ -974,41 +965,7 @@ var Browser = {
    * @param {Array} bookmarks List of bookmark data objects.
    */
   populateBookmarks: function browser_populateBookmarks(bookmarks) {
-    this.debug( ' launch_from = ' + this.launch_from );
-    switch( this.launch_from ) {
-      case 0 : // from ICON
-        Awesomescreen.selectTopSites();
-        this.launch_from = -1;
-        break;
-
-      case 1 : // from BOOKMARK(WEBLINK)
-        this.launch_from = -1;
-        break;
-
-      case 2 : // from SMARTPHONE
-        Awesomescreen.selectTopSites();
-        this.launch_from = -1;
-        break;
-
-      case 3 : // from VOICE_SEARCH
-      case 4 : // from HOME_SEARCH
-        if(( this.category > 0 ) && ( this.keyword != '' )) {
-          var searchList = SearchUtil.getCurrentSearchUrl();
-          var url = searchList[ this.category - 1 ] + this.keyword;
-          this.debug(' search url = ' + url);
-          this.navigate( url );
-        }
-        this.launch_from = -1;
-        break;
-
-      case 5 : // from DIRECT LAUNCH
-        var url = this.start_page_url;
-        if(( url != null ) && ( url != "" )) {
-          this.navigate(url);
-        }
-        this.launch_from = -1;
-        break;
-    }
+    Awesomescreen.selectTopSites();
   },
 
   handleActivity: function browser_handleActivity(activity) {
