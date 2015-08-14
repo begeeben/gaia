@@ -1107,23 +1107,6 @@ var Browser = {
   /**
    * key hook
    */
-  preventDefaultForVideo: function browser_preventDefaultForVideo(ev) {
-    if(Browser.sideBlock.dataset.sidebar == 'true'){
-      switch (ev.keyCode) {
-      case KeyEvent.DOM_VK_NET_TD:
-      case KeyEvent.DOM_VK_NET_BS:
-      case KeyEvent.DOM_VK_NET_CS:
-      case KeyEvent.DOM_VK_CHG_INPUT:
-      case KeyEvent.DOM_VK_F_CHG_INPUT:
-      case KeyEvent.DOM_VK_F4:
-      case KeyEvent.DOM_VK_AD_CHANGE:
-        ev.preventDefault();
-        break;
-      default:
-        break;
-      }
-    }
-  },
   keyHook: function browser_keyHook(ev) {
     this.debug('kc = ' + ev.keyCode);
 
@@ -1136,33 +1119,27 @@ var Browser = {
 
     if(BrowserDialog.isDisplayed()) {
       BrowserDialog.handleKeyEvent(ev);
-      this.preventDefaultForVideo(ev);
       return;
     }
     if(AuthenticationDialog.isDisplayed()) {
       AuthenticationDialog.handleKeyEvent(ev);
-      this.preventDefaultForVideo(ev);
       return;
     }
     if(Settings.isDisplayed()) {
       Settings.handleKeyEvent(ev);
-      this.preventDefaultForVideo(ev);
       return;
     }
     if(Awesomescreen.isDisplayed()) {
       if(!Awesomescreen.handleKeyEvent(ev)){
-        this.preventDefaultForVideo(ev);
         return;
       }
     }
     if(SearchResult.isDisplayed()) {
       SearchResult.handleKeyEvent(ev);
-      this.preventDefaultForVideo(ev);
       return;
     }
     // in the input area focus (= display keyboard)
     if(document.activeElement.nodeName == 'INPUT') {
-      this.preventDefaultForVideo(ev);
       return;
     }
 
@@ -1204,9 +1181,6 @@ var Browser = {
       break;
 
     default:
-      if(Browser.sideBlock.dataset.sidebar == 'true'){
-        this.preventDefaultForVideo(ev);
-      }
       break;
     }
   },
