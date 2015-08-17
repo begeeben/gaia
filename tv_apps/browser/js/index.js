@@ -1,5 +1,6 @@
 'use strict';
 
+/* exported _ */
 var _ = navigator.mozL10n.get;
 
 var Browser = {

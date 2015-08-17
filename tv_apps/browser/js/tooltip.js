@@ -1,6 +1,7 @@
-'use strict';
+/* global _ */
+/* global Toolbar */
 
-var _ = navigator.mozL10n.get;
+'use strict';
 
 /**
  * Browser App Tooltip.

@@ -1,10 +1,8 @@
-/* globals _,  Browser, BrowserDB, */
+/* globals _, Browser, BrowserDB */
 
 /* exported Awesomescreen */
 
 'use strict';
-
-var _ = navigator.mozL10n.get;
 
 /**
  * Browser App Awesomescreen. Display top sites, bookmarks, histories and search

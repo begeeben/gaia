@@ -1,6 +1,6 @@
-'use strict';
+/* global _ */
 
-var _ = navigator.mozL10n.get;
+'use strict';
 
 /**
  * The dialog listen to mozbrowsershowmodalprompt event.

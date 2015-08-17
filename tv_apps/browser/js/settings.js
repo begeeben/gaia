@@ -1,10 +1,9 @@
 /* exported Settings */
+/* global _ */
 /* global Browser */
 /* global BrowserDB */
 
 'use strict';
-
-var _ = navigator.mozL10n.get;
 
 /**
  * Browser app settings panel.

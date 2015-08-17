@@ -1,8 +1,6 @@
-/* global Browser, BrowserDB, MozActivity */
+/* global _, Browser, BrowserDB, MozActivity */
 
 'use strict';
-
-var _ = navigator.mozL10n.get;
 
 /**
  * Browser app toolbar
