@@ -554,13 +554,6 @@ var Browser = {
           tab.zoomInit = false;
           tab.dom.zoom(Toolbar.getDefaultZoomScale());
         }
-        if( tab.smaphoSetUrl ) {
-          if( tab.smaphoAddBookmark ) {
-            Remote.sendSmaphoAddBookmark(true);
-          } else {
-            Remote.sendSmaphoSetUrl(true);
-          }
-        }
         break;
 
       case 'mozbrowserloadend':
@@ -580,13 +573,6 @@ var Browser = {
         tab.loading = false;
         this.refreshBrowserParts();
         this.initStartBrowsing();
-        if( tab.smaphoSetUrl ) {
-          tab.smaphoSetUrl = false;
-          if( tab.smaphoAddBookmark ) {
-            tab.smaphoAddBookmark = false;
-            Remote.addBookmark(tab);
-          }
-        }
 
         // get to favicon
         if( (tab.url != null) && (tab.url != "") && (!tab.iconUrl) ) {
@@ -704,15 +690,6 @@ var Browser = {
         evt.preventDefault();
         tab.loading = false;
         this.refreshBrowserParts();
-        if( tab.smaphoSetUrl ) {
-          tab.smaphoSetUrl = false;
-          if( tab.smaphoAddBookmark ) {
-            tab.smaphoAddBookmark = false;
-            Remote.sendSmaphoAddBookmark(false);
-          } else {
-            Remote.sendSmaphoSetUrl(false);
-          }
-        }
         if (evt.detail.type === 'fatal') {
           if( Awesomescreen.isDisplayedTab() ) Awesomescreen.tabviewHidden();
           this.handleCrashed(tab);
@@ -812,8 +789,6 @@ var Browser = {
         security: null,
         loading: false,
         alive: true,
-        smaphoSetUrl: false,
-        smaphoAddBookmark: false,
         timestamp: new Date().getTime()
       };
     }
@@ -883,7 +858,6 @@ var Browser = {
   },
 
   closeBrowser: function browser_closeBrowser(ev) {
-    Remote.close(); // close TCPSocket
     self.close();
   },
 
@@ -1197,7 +1171,6 @@ document.addEventListener('visibilitychange', function browser_VisivilityChange(
       // XXX: open side block
     }
     if( Browser.currentInfo ) Browser.refreshBrowserParts();
-    Remote.suspend();
   } else {
     Browser.debug('browser resume...');
     Browser.isSuspend = false;
@@ -1205,7 +1178,6 @@ document.addEventListener('visibilitychange', function browser_VisivilityChange(
       // XXX: open side block
     }
     //Browser.hashChange();
-    Remote.init();
     if(Browser.currentInfo) {
       if(( Browser.currentInfo.url == null ) || ( Browser.currentInfo.url == '' )) {
         Awesomescreen.selectTopSites();
@@ -1225,7 +1197,6 @@ window.addEventListener('load', function browserOnLoad(evt) {
   mozL10n.ready(function() {
     // hash change param
     Browser.hashChange();
-    Remote.init(); // init TCPSocket
     Browser.init();
   }.bind(this));
 });
