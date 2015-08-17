@@ -19,13 +19,13 @@ var Settings = {
 
   /** Get all DOM elements when inited. */
   getAllElements: function settings_getAllElements() {
-  
+
     var toCamelCase = function toCamelCase(str) {
       return str.replace(/\-(.)/g, function replacer(str, p1) {
         return p1.toUpperCase();
-      });                                                                                                                                                 
+      });
     };
-  
+
     var elementIDs = [
       'settings-list', 'settings-list-area',
       'settings-homepage', 'settings-homepage-name',
@@ -51,7 +51,7 @@ var Settings = {
 
       'settings-banner-message'
     ];
-  
+
     // Loop and add element with camel style name to Modal Dialog attribute.
     elementIDs.forEach(function createElementRef(name) {
       this[toCamelCase(name)] = document.getElementById(name);
@@ -238,7 +238,7 @@ var Settings = {
       this.settingsDialogHomepage.classList.remove('hidden');
       this.settingsDialogHomepageInput.classList.remove('input');
       this.settingsDialogHomepageInput.classList.remove('exfocus');
-      this.settingsDialogHomepageInputArea.value = 
+      this.settingsDialogHomepageInputArea.value =
         this.settingsHomepageName.textContent;
       this.settingsDialogHomepageInputArea.tabIndex = '0';
       this.settingsDialogHomepageClear.tabIndex = '0';
@@ -425,7 +425,7 @@ var Settings = {
         item.addEventListener('keyup',
           this.handleDialogSearchSelected.bind(this));
         this.focusList.push(item);
-      } 
+      }
       this.focusList.push(this.settingsDialogSearchOk);
       this.focusList.push(this.settingsDialogSearchCancel);
       this.focusPos = this.focusList.length - 1;

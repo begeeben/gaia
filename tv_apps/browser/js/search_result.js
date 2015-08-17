@@ -95,11 +95,11 @@ var SearchResult = {
     title.classList.add('result-title');
     var url = document.createElement('div');
     url.classList.add('result-url');
- 
+
     link.appendChild(title);
     link.appendChild(url);
     template.appendChild(link);
- 
+
     return template;
   },
 
@@ -170,7 +170,7 @@ var SearchResult = {
     if( engine ) {
       var result = this.searchResultTemplate.cloneNode(true);
       var title = result.childNodes[0].childNodes[0];
-      // title.innerHTML = 'Search by ' + engine; 
+      // title.innerHTML = 'Search by ' + engine;
       title.innerHTML = _('WB_LT_TIPS_S_SEARCH', {value0:engine});
       var uri = result.childNodes[0].childNodes[1];
       uri.innerHTML = Browser.getSearchFromInput(filter);
@@ -217,7 +217,7 @@ var SearchResult = {
     if(( ev.target.lastChild.lastChild.textContent != '' ) ||
        ( ev.target.lastChild.lastChild.textContent != undefined )) {
       var url = ev.target.lastChild.lastChild.textContent;
-      Browser.navigate(url);  
+      Browser.navigate(url);
       this.hide();
     }
   },

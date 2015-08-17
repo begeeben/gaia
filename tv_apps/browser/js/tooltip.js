@@ -21,21 +21,21 @@ var Tooltip = {
    */
   init: function tooltip_init() {
     this.tooltipBlock = document.getElementById('tooltip-block');
-    
+
     var elements = [
       {target: Toolbar.sidebarButtonBlock},
-      {target: Toolbar.backButtonBlock}, 
-      {target: Toolbar.forwardButtonBlock}, 
-      {target: Toolbar.addressButton}, 
-      {target: Toolbar.searchInput}, 
-      {target: Toolbar.bookmarkButtonBlock}, 
-      {target: Toolbar.showBookmarksButtonBlock}, 
-      {target: Toolbar.homeButtonBlock}, 
-      {target: Toolbar.zoomButtonBlock}, 
-      {target: Toolbar.tabsButtonBlock}, 
-      {target: Toolbar.newTabButtonBlock}, 
-      {target: Toolbar.menuButtonBlock}, 
-      {target: Toolbar.modeButtonBlock}, 
+      {target: Toolbar.backButtonBlock},
+      {target: Toolbar.forwardButtonBlock},
+      {target: Toolbar.addressButton},
+      {target: Toolbar.searchInput},
+      {target: Toolbar.bookmarkButtonBlock},
+      {target: Toolbar.showBookmarksButtonBlock},
+      {target: Toolbar.homeButtonBlock},
+      {target: Toolbar.zoomButtonBlock},
+      {target: Toolbar.tabsButtonBlock},
+      {target: Toolbar.newTabButtonBlock},
+      {target: Toolbar.menuButtonBlock},
+      {target: Toolbar.modeButtonBlock},
     ];
 
     this.overObj = this.mouseoverEvent.bind(this);
@@ -50,7 +50,7 @@ var Tooltip = {
       target.addEventListener('mouseup', this.clickEvent.bind(this));
     }, this);
   },
- 
+
   /**
    * mousemove event
    */

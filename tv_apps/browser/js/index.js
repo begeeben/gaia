@@ -1,6 +1,16 @@
 'use strict';
 
 /* exported _ */
+/* global AuthenticationDialog */
+/* global Awesomescreen */
+/* global BrowserDB */
+/* global BrowserDialog */
+/* global SearchResult */
+/* global SearchUtil */
+/* global Settings */
+/* global Toolbar */
+/* global UrlHelper */
+
 var _ = navigator.mozL10n.get;
 
 var Browser = {
@@ -8,7 +18,7 @@ var Browser = {
   currentInfo: null,
   info: {},
 
-  DEFAULT_LANG: "en-US",
+  DEFAULT_LANG: 'en-US',
   language: null,
 
   SCREEN_HEIGHT: 1080,
@@ -110,6 +120,7 @@ var Browser = {
       // init database MaxNum Check
       this.initIdbCheck();
 
+      // XXX: Remove country dependency here.
       // get Country
       this.getCountry((function() {
         // get Language
@@ -306,7 +317,7 @@ var Browser = {
       {'type':'visits'   , 'maxNum': Browser.MAX_HISTORY_LIST},
       {'type':'places'   , 'maxNum': Browser.MAX_TOPSITE_LIST},
       {'type':'icons'    , 'maxNum': Browser.MAX_ICON_LIST}
-    ]
+    ];
 
     for (var i=0; i < checkTypeTbl.length; i++) {
       if(checkTypeTbl[i].type != 'icons') {
@@ -913,7 +924,7 @@ var Browser = {
 
   selectInfo: function browser_selectInfo(id) {
     this.currentInfo = this.info[id];
-    this.debug("currentInfo = " + this.currentInfo.id);
+    this.debug('currentInfo = ' + this.currentInfo.id);
     Toolbar.setUrlBar(this.currentInfo.url);
     Toolbar.setPrivateBrowsing(this.currentInfo.pvtBrowse);
     this.updateSecurityIcon();
