@@ -277,18 +277,18 @@ var Browser = {
   initScreenMode: function browser_initScreenMode() {
     BrowserDB.db.open((function() {
       BrowserDB.getSetting('screen_mode', ((function(result) {
-        if(result && result == 'full') {
+        if(!result || result === 'full') {
           // Full screen
           Browser.sideBlock.dataset.sidebar = 'false';
           Browser.mainBlock.dataset.sidebar = 'false';
-        } else {
+          if(!result) {
+            // save screen mode
+            BrowserDB.updateSetting('full', 'screen_mode');
+          }
+        } else if (result === 'side') {
           // Disp side screen
           Browser.sideBlock.dataset.sidebar = 'true';
           Browser.mainBlock.dataset.sidebar = 'true';
-          if(!result || result != 'side') {
-            // save screen mode
-            BrowserDB.updateSetting('side', 'screen_mode');
-          }
         }
       }).bind(this)));
     }).bind(this));
