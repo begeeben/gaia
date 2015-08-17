@@ -11,7 +11,7 @@ var _ = navigator.mozL10n.get;
  * @namespace Settings
  */
 var Settings = {
-  DEFAULT_HOMEPAGE: 'http://www.panasonic.com',
+  DEFAULT_HOMEPAGE: 'http://www.mozilla.org',
   currentSearchEngine: null,
   selectSearchEngine: null,
   searchEngineList: null,

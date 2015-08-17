@@ -15,7 +15,7 @@ var Awesomescreen = {
 
   DEFAULT_FAVICON: 'style/images/default-fav.svg',
   DEFAULT_TAB_ADD: 'style/images/add-tab.svg',
-  DEFAULT_SCREENSHOT: 'style/images/panasonic_img.jpg',
+  DEFAULT_SCREENSHOT: 'style/images/mozilla_screenshot.png',
   DEFAULT_BOOKMARK: 'Bookmark',
   DEFAULT_HISTORY: 'History',
   DEFAULT_TABVIEW: 'Tabview',
