@@ -1,7 +1,6 @@
 {
   "name": "Browser",
   "description": "Browser",
-  "version": "9",
   "launch_path": "/index.html",
   "type": "privileged",
   "permissions": {
@@ -17,10 +16,7 @@
     },
     "bg-BG": {
       "name": "Browser",
-      "description": "Browser",
-      "developer": {
-        "name": "Panasonic"
-      }
+      "description": "Browser"
     },
     "cs-CZ": {
       "name": "Browser",
@@ -48,10 +44,7 @@
     },
     "en-GB": {
       "name": "Browser",
-      "description": "Browser",
-      "developer": {
-        "name": "Panasonic"
-      }
+      "description": "Browser"
     },
     "en-HK": {
       "name": "Browser",
@@ -67,10 +60,7 @@
     },
     "en-US": {
       "name": "Browser",
-      "description": "Browser",
-      "developer": {
-        "name": "Panasonic"
-      }
+      "description": "Browser"
     },
     "es-BR": {
       "name": "Browser",
@@ -122,10 +112,7 @@
     },
     "ja-JP": {
       "name": "ブラウザ",
-      "description": "ブラウザ",
-      "developer": {
-        "name": "Panasonic"
-      }
+      "description": "ブラウザ"
     },
     "lt-LT": {
       "name": "Browser",
@@ -208,9 +195,6 @@
       "description": "Browser"
     }
   },
-  "developer": {
-    "name": "Panasonic"
-  },
   "default_locale": "en-US",
   "icons": {
     "336": "/style/icons/icon.png"
@@ -222,12 +206,6 @@
         "url": {
           "required":true, "pattern":"https?:.{1,16384}", "patternFlags":"i"
         }
-      }
-    },
-    "pana_apps_launch":{
-      "href": "/index.html",
-      "filters":{
-        "productid": "0077777700140002"
       }
     }
   }
