@@ -197,7 +197,7 @@
   },
   "default_locale": "en-US",
   "icons": {
-    "336": "/style/icons/icon.png"
+    "284": "/shared/resources/branding/browser_284.png"
   },
   "activities": {
     "view": {
