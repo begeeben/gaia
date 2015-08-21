@@ -811,11 +811,8 @@ var Browser = {
     var tabIds = Object.keys(this.info);
     //Hide other than the selected tab
     for( var i = 0 ; i < tabCount ; i++ ) {
-      console.log('createIframe', tabIds, i);
-      console.log('createIframe', this.info[tabIds[i]]);
       this.switchVisibility(this.info[tabIds[i]], false);
     }
-    console.log('createIframe', info);
     this.bindBrowserEvents(iframe, info);
     this.info[info.id] = info;
     this.webBlock.appendChild(iframe);
@@ -901,13 +898,11 @@ var Browser = {
       clearTimeout(info.setVisibleTimeout);
     }
     if (info.dom.setVisible) {
-      console.log('setVisibleWrapper');
       this.switchVisibility(info, true);
       return;
     }
     info.setVisibleTimeout = setTimeout(function() {
       if (info.dom.setVisible) {
-        console.log('setVisibleWrapper');
         this.switchVisibility(info, true);
       }
     });

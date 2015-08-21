@@ -425,7 +425,6 @@ var Awesomescreen = {
             Toolbar.urlInput.blur();
             Browser.navigate(uri);
             Browser.selectInfo(Browser.currentInfo.id);
-            console.log('clickTopList');
             Browser.switchVisibility(Browser.currentInfo, true);
             //To the tab you are currently viewing the final display tab
             Awesomescreen.finalDispTabId = Browser.currentInfo.id;
@@ -1914,7 +1913,6 @@ var Awesomescreen = {
       Browser.info[this].alive = false;
     }
     delete Browser.info[this];
-    console.log('deleteIframe');
     Browser.switchVisibility(Browser.info[Awesomescreen.finalDispTabId], true);
   },
 
@@ -2219,7 +2217,6 @@ var Awesomescreen = {
     for( var i=0; i < tabCount; i++) {
 
       if(tabIds[i] != currentTabId){
-        console.log('currentTabShow');
         Browser.switchVisibility(Browser.info[tabIds[i]], false);
       }else{
         //Show the selected tab
@@ -2228,12 +2225,10 @@ var Awesomescreen = {
           if(!Browser.info[tabIds[i]].alive){
             Browser.info[tabIds[i]].dom.src = Browser.info[tabIds[i]].url;
           }
-        console.log('currentTabShow');
           Browser.switchVisibility(Browser.info[tabIds[i]], true);
           this.finalDispTabId = Browser.info[tabIds[i]].id;
           if(this.isDisplayedTop()) this.topsiteHidden();
         }else{
-        console.log('currentTabShow');
           Browser.switchVisibility(Browser.info[tabIds[i]], true);
           this.selectTopSites();
         }
@@ -2414,7 +2409,6 @@ var Awesomescreen = {
       if( Browser.info[id].loading ) Browser.info[id].dom.stop();
       //all tab hide
       for( var i=0; i < tabCount; i++) {
-        console.log('tabDelete');
         Browser.switchVisibility(Browser.info[tabIds[i]], false);
       }
       //switch between tabs
@@ -2463,7 +2457,6 @@ var Awesomescreen = {
       focusElem = list.previousSibling;
       dispTab = Browser.info[tabIds[array - 1]];
     }
-    console.log('switchCurrentTab');
     Browser.switchVisibility(dispTab, true);
     Browser.selectInfo(dispTab.id);
 
@@ -2699,14 +2692,12 @@ var Awesomescreen = {
       var tabIds = Object.keys(Browser.info);
       //all tab hide
       for( var i=0; i < tabCount; i++) {
-        console.log('topSitesReturnFunc');
         Browser.switchVisibility(Browser.info[tabIds[i]], false);
       }
 
       if(!Browser.info[Awesomescreen.finalDispTabId].alive){
           Browser.info[Awesomescreen.finalDispTabId].dom.src = Browser.info[Awesomescreen.finalDispTabId].url;
       }
-      console.log('topSitesReturnFunc');
       Browser.switchVisibility(Browser.info[Awesomescreen.finalDispTabId],true);
       Browser.selectInfo(Awesomescreen.finalDispTabId);
       Browser.refreshBookmarkButton();
