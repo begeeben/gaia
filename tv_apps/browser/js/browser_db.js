@@ -40,6 +40,9 @@ var BrowserDB = {
    * Populate topsites data from mozSettings to database.
    */
   initSingleVariant: function browserDB_initSingleVariant() {
+    // XXX: This method is not in use for TV. It was used for operators to
+    //      customise default browser top sites. Leave it here for now after
+    //      customisation for the TV browser is done.
 /* TODO: mozSettings to indexedDB
     this.variantObserver = this.handleSingleVariant.bind(this);
     navigator.mozSettings.addObserver('operatorResources.data.topsites',
@@ -345,7 +348,7 @@ var BrowserDB = {
       this.db.deleteIconUrl(uri, this.DEFAULT_TYPE_BOOKMARK, callback);
     }).bind(this));
   },
-  
+
   /**
    * Delete a history by URI
    * @param {String} uri URI
@@ -356,7 +359,7 @@ var BrowserDB = {
       this.db.deleteIconUrl(uri, this.DEFAULT_TYPE_HISTORY, callback);
     }).bind(this));
   },
-  
+
 
 
 
@@ -410,8 +413,8 @@ var BrowserDB = {
    * @param {String} iconUri Base64 encoded image string
    * @param {Function} callback Runs on success
    */
-  
-  
+
+
   setPageIconUri: function browserDB_setPageIconUri(uri, iconUri, callback) {
     this.db.updatePlaceIconUri(uri, iconUri, callback);
   },
@@ -1067,7 +1070,7 @@ BrowserDB.db = {
       console.log('Transaction error while trying to clear visits');
     };
     var objectStore = transaction.objectStore('visits');
-    objectStore.openCursor().onsuccess = 
+    objectStore.openCursor().onsuccess =
       function onSuccess(e) {
       var cursor = e.target.result;
       if (cursor) {
@@ -1365,7 +1368,7 @@ BrowserDB.db = {
         if(icons){
           if(icons.iconUri){
              bookmark.iconUri = icons.iconUri;
- 
+
           }else{
              bookmark.iconUri = Awesomescreen.DEFAULT_FAVICON;
           }
@@ -1895,7 +1898,7 @@ BrowserDB.db = {
 
   /**
    * indexedDB MaxNum Check.
-   * @param {type} Bookmark or History or Topsite 
+   * @param {type} Bookmark or History or Topsite
    * @param {maxNum} Object-specific maximum number
    */
   idbMaxCheck: function db_idbMaxCheck(objType, maxNum) {
@@ -1959,7 +1962,7 @@ BrowserDB.db = {
     }
 
     request.onerror = function onReadError(event) {
-        console.log('error reading object count'); 
+        console.log('error reading object count');
     };
 
 
@@ -2011,7 +2014,7 @@ BrowserDB.db = {
              requestBookmark.onerror = function onReadError(event) {
                  console.log('error reading bookmarks');
              };
-            
+
              cursor.continue();
            }
 
@@ -2020,7 +2023,7 @@ BrowserDB.db = {
     }
 
     request.onerror = function onReadError(event) {
-        console.log('error reading object icon count'); 
+        console.log('error reading object icon count');
     };
   }
 

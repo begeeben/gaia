@@ -6,193 +6,28 @@
   "permissions": {
     "browser":{},
     "systemXHR":{},
-    "storage": {},
     "desktop-notification" : {}
   },
   "locales": {
     "ar": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "bg-BG": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "cs-CZ": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "da-DK": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "de-DE": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "el-GR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "en-AU": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "en-BR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "en-GB": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "en-HK": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "en-IE": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "en-TW": {
-      "name": "Browser",
-      "description": "Browser"
+      "name": "المتصفح",
+      "description": "متصفح الويب"
     },
     "en-US": {
       "name": "Browser",
-      "description": "Browser"
+      "description": "Web Browser"
     },
-    "es-BR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "es-ES": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "es-US": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "et-EE": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "fi-FI": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "fr-CA": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "fr-FR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "hi": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "hr-HR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "hu-HU": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "id": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "it-IT": {
-      "name": "Browser",
-      "description": "Browser"
+    "fr": {
+      "name": "Navigateur",
+      "description": "Navigateur Web"
     },
     "ja-JP": {
       "name": "ブラウザ",
       "description": "ブラウザ"
     },
-    "lt-LT": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "lv-LV": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "nl-NL": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "no-NO": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "pl-PL": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "pt-BR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "pt-PT": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "ro-RO": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "ru-RU": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "ru": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "sk-SK": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "sl-SI": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "sr-YU": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "sv-SE": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "th": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "tr-TR": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "vi": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "zh-CN": {
-      "name": "Browser",
-      "description": "Browser"
-    },
-    "zh-HK": {
-      "name": "Browser",
-      "description": "Browser"
-    },
     "zh-TW": {
-      "name": "Browser",
-      "description": "Browser"
+      "name": "網路瀏覽器",
+      "description": "網路瀏覽器"
     }
   },
   "default_locale": "en-US",
