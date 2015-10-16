@@ -24,10 +24,13 @@ smart-button {
   transform: translateY(0%);
 }
 
-#settings-list-area,
+#settings-list-area {
+  margin: 7rem auto;
+}
+
 #firefox-account-area {
-  width: 1108px;
-  margin: 50px auto 0 auto;
+  margin-top: 13rem;
+  margin-bottom: 5rem;
 }
 
 #settings-header,
@@ -35,13 +38,23 @@ smart-button {
   top: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: 4.6rem;
   width: 100%;
   font-family: Fira Sans;
-  font-size: 48px;
-  font-style: Italic; /* TODO: Regular? */
+  font-size: 4.6rem;
+  font-style: Italic;
+  font-weight: lighter;
+  line-height: 4.6rem;
   color: #4d4d4d;
   pointer-events: none;
+}
+
+#settings-header {
+  margin-bottom: 7rem;
+}
+
+#firefox-account-header {
+  margin-bottom: 5rem;
 }
 
 #settings-header-title {
@@ -49,10 +62,6 @@ smart-button {
 }
 
 #settings-list-item {
-  top: 72px;
-  left: 0;
-  bottom: 0;
-  right: 0;
   margin: auto;
   width: 100%;
 }
@@ -181,12 +190,6 @@ smart-button {
   background-color: #4d4d4d;
   line-height: 4rem;
   height: 4rem;
-}
-
-#firefox-account-sign-in-description,
-#firefox-account-signed-in-as {
-  color: #4d4d4d;
-  padding: 15px;
 }
 
 .firefox-account-disconnected > #firefox-account-signed-in-as,

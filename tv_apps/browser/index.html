@@ -683,7 +683,7 @@
 
       <!-- settings -->
       <div role="region" id="settings-list" class="skin-organic">
-        <div id="settings-list-area">
+        <div id="settings-list-area" class="settings-container">
           <div id="settings-header">
             <p id="settings-header-title" data-l10n-id="WB_LT_BROWSER_SETTINGS">Browser Settings</p>
           </div>
@@ -705,17 +705,18 @@
             </div>
           </div>
         </div>
-        <div id="firefox-account-area">
+        <div id="firefox-account-area" class="settings-container">
           <div id="firefox-account-header">
             <p id="firefox-account-title" data-l10n-id="firefox-account">Firefox Account</p>
           </div>
           <div id="firefox-account-sign-in" class="firefox-account-disconnected">
             <smart-button id="firefox-account-sign-in-button" type="simple-text" data-l10n-id="create-account-or-sign-in">Create Account or Sign In</smart-button>
-            <p id="firefox-account-sign-in-description" data-l10n-id="sign-in-description">Access your tabs, bookmarks, passwords and more wherever you use Firefox.</p>
-            <span id="firefox-account-signed-in-as" data-l10n-id="signed-in-as">Signed in as </span><span id="firefox-account-email"></span>
-            <smart-button id="firefox-account-resend-button" type="simple-text" data-l10n-id="resend-verify-email">Resend Verify Email</smart-button>
-            <smart-button id="firefox-account-forget-button" type="simple-text" data-l10n-id="forget-this-email">Forget this Email</smart-button>
-            <smart-button id="firefox-account-disconnect-button" type="simple-text" data-l10n-id="disconnect">Disconnect</smart-button>
+            <p id="firefox-account-sign-in-description" data-l10n-id="sign-in-description" class="fxa-description">Access your tabs, bookmarks, passwords and more wherever you use Firefox.</p>
+            <span id="firefox-account-email" class="fxa-description"></span>
+            <smart-button id="firefox-account-resend-button" type="simple-text" data-l10n-id="resend-verify-email" class="fxa-button">Resend Verify Email</smart-button>
+            <smart-button id="firefox-account-forget-button" type="simple-text" data-l10n-id="forget-this-email" class="fxa-button">Forget this Email</smart-button>
+            <smart-button id="firefox-account-disconnect-button" type="simple-text" data-l10n-id="disconnect" class="fxa-button">Disconnect</smart-button>
+
           </div>
           <div id="firefox-account-sync-list" class="hidden"></div>
         </div>
