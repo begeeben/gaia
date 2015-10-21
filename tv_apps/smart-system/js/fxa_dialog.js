@@ -18,6 +18,8 @@
      */
     this.render();
     this.publish('created');
+
+    focusManager.addUI(this);
   };
 
   FxAccountsDialog.prototype = Object.create(window.SystemDialog.prototype);

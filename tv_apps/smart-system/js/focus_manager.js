@@ -187,6 +187,7 @@
       }
       if (topMost) {
         // focus top-most system UI
+        console.log('focus', topMost);
         topMost.focus();
         window.dispatchEvent(
           new CustomEvent('focuschanged', {detail: { topMost: topMost }}));

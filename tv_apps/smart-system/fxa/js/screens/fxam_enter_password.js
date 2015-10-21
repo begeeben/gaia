@@ -137,6 +137,8 @@ var FxaModuleEnterPassword = (function() {
 
     _enableNext(this.fxaPwInput);
 
+    FxaModuleKeyNavigation.add(
+      ['#fxa-pw-input', '#fxa-forgot-password', '#fxa-show-pw']);
   };
 
   Module.onNext = function onNext(gotoNextStepCallback) {
