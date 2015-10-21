@@ -30,8 +30,12 @@ var FxaModuleUI = {
       FxaModuleNavigation.back();
     });
 
-    this.fxaModuleNext.addEventListener('mousedown', function() {
-      FxaModuleNavigation.next();
+    this.fxaModuleNext.addEventListener('click', function(e) {
+      // left mouse button or enter key
+      if(e.button === 0 ||
+        (e.keyCode && e.keyCode === KeyEvent.DOM_VK_RETURN)) {
+        FxaModuleNavigation.next();
+      }
     });
 
     this.fxaModuleDone.addEventListener('click', function() {

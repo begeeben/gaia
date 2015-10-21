@@ -115,7 +115,9 @@
    */
   SystemDialog.prototype.focus = function sd_focus() {
     if (this.browser && this.browser.element) {
+      document.activeElement.blur();
       this.browser.element.focus();
+      console.log('focus', this.browser.element);
     }
   };
 
@@ -155,6 +157,7 @@
       this.element.parentNode.removeChild(this.element);
       this.element = null;
     }
+    focusManager.removeUI(this);
     this.publish('destroyed');
   };
 
@@ -188,8 +191,10 @@
     this.publish('opening');
     this.element.hidden = false;
     this.element.classList.add(this.customID);
+    this.element.classList.add('visible');
     this.onShow();
     this.updateHeight();
+    focusManager.focus();
     this.publish('show');
   };
 
@@ -204,7 +209,9 @@
     // After the dialog is hidden, pass the reason to its controller via onHide.
     this.element.hidden = true;
     this.element.classList.remove(this.customID);
+    this.element.classList.remove('visible');
     this.onHide(reason);
+    focusManager.focus();
     // If the caller is SystemDialogManager,
     // no need publish 'hide' event to SystemDialogManager.
     if (!isManagerRequest) {
@@ -240,6 +247,14 @@
     if (!this.instanceID) {
       this.instanceID = this.customID;
     }
+  };
+
+  SystemDialog.prototype.getElement = function sd_getElement() {
+    return this.element;
+  };
+
+  SystemDialog.prototype.isFocusable = function sd_isFocusable() {
+    return this.element && this.element.classList.contains('visible');
   };
 
   exports.SystemDialog = SystemDialog;

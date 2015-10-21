@@ -27,6 +27,8 @@ var FxaModuleNavigation = {
     LazyLoader.load('view/view_' + flow + '.js', function loaded() {
       FxaModuleUI.setMaxSteps(View.length);
       window.location.hash = View.start.id;
+
+      FxaModuleKeyNavigation.init();
     }.bind(this));
   },
   hashchangeHandler: function fxam_nav_hashchangeHandler() {

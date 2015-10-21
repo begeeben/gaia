@@ -196,6 +196,8 @@ var FxaModuleEnterEmail = (function() {
       }.bind(this)
     );
 
+    FxaModuleKeyNavigation.add('#fxa-email-input', '#fxa-email-clean-btn');
+
     // Avoid to add listener twice
     this.initialized = true;
   };
