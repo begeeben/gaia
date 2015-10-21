@@ -86,7 +86,13 @@
     },
 
     remove(param) {
-
+      if (Array.isArray(param)) {
+        var elements = getElements(param);
+        this.spatialNavigator.multiRemove(elements);
+      } else {
+        var element = document.querySelector(param);
+        this.spatialNavigator.remove(element);
+      }
     }
   };
 
