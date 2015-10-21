@@ -102,6 +102,10 @@ var FxaModuleEnterEmail = (function() {
       function onFocus() {
         this.fxaLogo.setAttribute('hidden', true);
         if(this.fxaEmailInput.value) {
+          // var length = this.fxaEmailInput.value.length;
+          // this.fxaEmailInput.setSelectionRange(length, length);
+          this.fxaEmailInput.select();
+          console.log('select');
           this.fxaEmailCleanBtn.classList.add('show');
         }
       }.bind(this)
@@ -110,7 +114,6 @@ var FxaModuleEnterEmail = (function() {
       'blur',
       function onBlur() {
         this.fxaLogo.removeAttribute('hidden');
-        this.fxaEmailCleanBtn.classList.remove('show');
       }.bind(this)
     );
 
@@ -196,10 +199,28 @@ var FxaModuleEnterEmail = (function() {
       }.bind(this)
     );
 
-    FxaModuleKeyNavigation.add(['#fxa-email-input', '#fxa-email-clean-btn']);
+    // There are 3 reasons why using setTimeout at this place:
+    // 1. Focus() only works in the setTimeout callback here
+    // 2. The email input will be focused first and the keyboard will be brought
+    //    up. We need to do this after the slide up animation of the fxa_dialog.
+    //    But the fxa iframe has no way to know when the slide up animation is
+    //    finished.
+    // 3. Put the FxaModuleKeyNavigation.init in the onanimate callback in
+    //    fxam_navigation.js doesn't work, since there is no animation for the
+    //    first page.
+    setTimeout(() => {
+      FxaModuleKeyNavigation.init(
+        ['#fxa-email-input', '#fxa-email-clean-btn', '#fxa-module-next']);
+    }, 500);
 
     // Avoid to add listener twice
     this.initialized = true;
+  };
+
+  Module.initKeyNavigation = function initKeyNavigation () {
+    console.log('initKeyNavigation');
+    FxaModuleKeyNavigation.init(
+      ['#fxa-email-input', '#fxa-email-clean-btn', '#fxa-module-next']);
   };
 
   Module.onNext = function onNext(gotoNextStepCallback) {
@@ -212,8 +233,6 @@ var FxaModuleEnterEmail = (function() {
       function onSuccess(response) {
         FxaModuleOverlay.hide();
         FxaModuleManager.setParam('email', email);
-        FxaModuleKeyNavigation.remove(
-          ['#fxa-email-input', '#fxa-email-clean-btn']);
         if (response && response.registered) {
           _loadSignIn(gotoNextStepCallback);
         } else if (this.isFTU) {
