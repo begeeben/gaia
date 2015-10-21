@@ -196,7 +196,7 @@ var FxaModuleEnterEmail = (function() {
       }.bind(this)
     );
 
-    FxaModuleKeyNavigation.add('#fxa-email-input', '#fxa-email-clean-btn');
+    FxaModuleKeyNavigation.add(['#fxa-email-input', '#fxa-email-clean-btn']);
 
     // Avoid to add listener twice
     this.initialized = true;
@@ -212,6 +212,8 @@ var FxaModuleEnterEmail = (function() {
       function onSuccess(response) {
         FxaModuleOverlay.hide();
         FxaModuleManager.setParam('email', email);
+        FxaModuleKeyNavigation.remove(
+          ['#fxa-email-input', '#fxa-email-clean-btn']);
         if (response && response.registered) {
           _loadSignIn(gotoNextStepCallback);
         } else if (this.isFTU) {
