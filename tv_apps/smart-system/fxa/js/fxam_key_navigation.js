@@ -33,7 +33,7 @@
 
     keyNavigationAdapter: null,
 
-    init() {
+    init(elementNames) {
       var elements = getElements(elementNames);
 
       this.spatialNavigator = new SpatialNavigator(elements);
@@ -49,8 +49,21 @@
 
       this.keyNavigationAdapter.on('move', key => {
         console.log(key);
+        var element = this.spatialNavigator.getFocusedElement();
+        if (element.tagName === 'INPUT' && element.value.length > 0) {
+          console.log(element.selectionStart, element.selectionEnd);
+          if (element.selectionStart === element.selectionEnd &&
+              (key === 'left' && element.selectionStart > 0) ||
+              (key === 'right' &&
+               element.selectionStart < element.value.length)) {
+            return;
+          }
+        }
         this.spatialNavigator.move(key);
       });
+
+      this.spatialNavigator.focus(elements[0]);
+      console.log(this.spatialNavigator);
     },
 
     add(param) {
@@ -81,7 +94,8 @@
       }
       console.log(a);
       console.log(this.spatialNavigator.getFocusedElement());
-      console.log(document.activeElement)
+      console.log(document.activeElement);
+      console.log(this.spatialNavigator);
       }, 500);
     },
 
