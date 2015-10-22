@@ -6,14 +6,6 @@
 
 (function (exports) {
 
-  var elementNames = [
-    // '#fxa-module-header .action-button',
-    // '#fxa-email-input', '#fxa-terms', '#fxa-privacy',
-    // '#fxa-age-select',
-    // '#fxa-pw-input', '#fxa-forgot-password', '#fxa-show-pw',
-    '#fxa-module-next'
-  ];
-
   function getElements(elementNames) {
     var elements = [];
 
@@ -29,15 +21,28 @@
 
   var FxaModuleKeyNavigation = {
 
+    enabled: false,
+
     spatialNavigator: null,
 
     keyNavigationAdapter: null,
 
     init(elementNames) {
-      var elements = getElements(elementNames);
+      var elements = elementNames ? getElements(elementNames) : null;
 
-      this.spatialNavigator = new SpatialNavigator(elements);
+      this.spatialNavigator = new SpatialNavigator(elements, {
+        navigableFilter: elem => {
+          if ((elem.offsetWidth <= 0 && elem.offsetHeight <= 0) ||
+              elem.disabled) {
+            return false;
+          }
+
+          return true;
+        }
+      });
+
       this.spatialNavigator.on('focus', elem => {
+        document.activeElement.blur();
         console.log('focus', elem);
         elem.focus();
         console.log('activeElement', document.activeElement);
@@ -50,8 +55,9 @@
       this.keyNavigationAdapter.on('move', key => {
         console.log(key);
         var element = this.spatialNavigator.getFocusedElement();
-        if (element.tagName === 'INPUT' && element.value.length > 0) {
-          console.log(element.selectionStart, element.selectionEnd);
+        if ( element.tagName === 'INPUT' &&
+            (element.type === 'email' || element.type === 'password') &&
+             element.value.length > 0) {
           if (element.selectionStart === element.selectionEnd &&
               (key === 'left' && element.selectionStart > 0) ||
               (key === 'right' &&
@@ -59,44 +65,28 @@
             return;
           }
         }
-        this.spatialNavigator.move(key);
+
+        if (this.enabled) {
+          this.spatialNavigator.move(key);
+        }
       });
 
-      this.spatialNavigator.focus(elements[0]);
-      console.log(this.spatialNavigator);
+      // this.spatialNavigator.focus(elements[0]);
+      // console.log(this.spatialNavigator);
     },
 
     add(param) {
-      setTimeout(() => {
-      //   var element = document.querySelector(param);
-
-      //   console.log(element);
-      //   console.log(document.activeElement);
-
-      // document.activeElement.blur();
-      //   console.log(document.activeElement);
-
-      //   element.focus();
-      //   console.log(document.activeElement);
-      // }, 1000);
-
-      // return;
-
-      var a;
       if (Array.isArray(param)) {
         var elements = getElements(param);
         this.spatialNavigator.multiAdd(elements);
-        a = this.spatialNavigator.focus(elements[0]);
+        this.spatialNavigator.focus(elements[0]);
       } else {
         var element = document.querySelector(param);
         this.spatialNavigator.add(element);
-        a = this.spatialNavigator.focus(element);
+        this.spatialNavigator.focus(element);
       }
-      console.log(a);
-      console.log(this.spatialNavigator.getFocusedElement());
-      console.log(document.activeElement);
-      console.log(this.spatialNavigator);
-      }, 500);
+
+      this.enabled = true;
     },
 
     remove(param) {
@@ -107,6 +97,15 @@
         var element = document.querySelector(param);
         this.spatialNavigator.remove(element);
       }
+    },
+
+    enable() {
+      this.enabled = true;
+      this.spatialNavigator.focus();
+    },
+
+    disable() {
+      this.enabled = false;
     }
   };
 

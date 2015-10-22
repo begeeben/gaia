@@ -100,6 +100,19 @@ var FxaModuleEnterPassword = (function() {
         }.bind(this)
       );
 
+      this.fxaPwInput.addEventListener('focus', () => {
+        setTimeout(() => {
+          this.fxaPwInput.select();
+        });
+      });
+
+      this.fxaShowPw.addEventListener('keypress', e => {
+        if ( e.keyCode && e.keyCode === KeyEvent.DOM_VK_RETURN) {
+          this.fxaShowPw.checked = !this.fxaShowPw.checked;
+          _togglePasswordVisibility.bind(this)();
+        }
+      });
+
       this.fxaShowPw.addEventListener(
         'change',
         _togglePasswordVisibility.bind(this),
@@ -137,15 +150,20 @@ var FxaModuleEnterPassword = (function() {
 
     _enableNext(this.fxaPwInput);
 
+    // There are 3 reasons why using setTimeout at this place:
+    // 1. Focus() only works in the setTimeout callback here
+    // 2. The input will be focused first and the keyboard will be brought
+    //    up. We need to do this after the slide up animation of the parent
+    //    fxa_dialog. But the fxa iframe has no way to know when the slide up
+    //    animation is finished.
+    // 3. Put the FxaModuleKeyNavigation.add in the onanimate callback in
+    //    fxam_navigation.js doesn't work, since there is no animation for the
+    //    first page in the flow.
     setTimeout(() => {
-      FxaModuleKeyNavigation.init(
-        ['#fxa-pw-input', '#fxa-forgot-password', 'label[for="fxa-show-pw"]']);
-    });
-  };
-
-  Module.initKeyNavigation = function initKeyNavigation () {
-    FxaModuleKeyNavigation.init(
-      ['#fxa-pw-input', '#fxa-forgot-password', '#fxa-show-pw']);
+      FxaModuleKeyNavigation.add([
+        '#fxa-pw-input', '#fxa-forgot-password',
+        '#fxa-show-pw', '#fxa-module-next']);
+    }, 500);
   };
 
   Module.onNext = function onNext(gotoNextStepCallback) {
@@ -166,6 +184,7 @@ var FxaModuleEnterPassword = (function() {
         _loadSigninSuccess(gotoNextStepCallback);
       }.bind(this),
       function onError(response) {
+        FxaModuleKeyNavigation.disable();
         _cleanForm(
           this.fxaPwInput,
           this.fxaShowPw

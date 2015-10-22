@@ -104,9 +104,11 @@ var FxaModuleEnterEmail = (function() {
         if(this.fxaEmailInput.value) {
           // var length = this.fxaEmailInput.value.length;
           // this.fxaEmailInput.setSelectionRange(length, length);
-          this.fxaEmailInput.select();
           console.log('select');
           this.fxaEmailCleanBtn.classList.add('show');
+          setTimeout(() => {
+            this.fxaEmailInput.select();
+          });
         }
       }.bind(this)
     );
@@ -201,26 +203,20 @@ var FxaModuleEnterEmail = (function() {
 
     // There are 3 reasons why using setTimeout at this place:
     // 1. Focus() only works in the setTimeout callback here
-    // 2. The email input will be focused first and the keyboard will be brought
-    //    up. We need to do this after the slide up animation of the fxa_dialog.
-    //    But the fxa iframe has no way to know when the slide up animation is
-    //    finished.
-    // 3. Put the FxaModuleKeyNavigation.init in the onanimate callback in
+    // 2. The input will be focused first and the keyboard will be brought
+    //    up. We need to do this after the slide up animation of the parent
+    //    fxa_dialog. But the fxa iframe has no way to know when the slide up
+    //    animation is finished.
+    // 3. Put the FxaModuleKeyNavigation.add in the onanimate callback in
     //    fxam_navigation.js doesn't work, since there is no animation for the
-    //    first page.
+    //    first page in the flow.
     setTimeout(() => {
-      FxaModuleKeyNavigation.init(
+      FxaModuleKeyNavigation.add(
         ['#fxa-email-input', '#fxa-email-clean-btn', '#fxa-module-next']);
     }, 500);
 
     // Avoid to add listener twice
     this.initialized = true;
-  };
-
-  Module.initKeyNavigation = function initKeyNavigation () {
-    console.log('initKeyNavigation');
-    FxaModuleKeyNavigation.init(
-      ['#fxa-email-input', '#fxa-email-clean-btn', '#fxa-module-next']);
   };
 
   Module.onNext = function onNext(gotoNextStepCallback) {
@@ -244,6 +240,9 @@ var FxaModuleEnterEmail = (function() {
         } else {
           _loadCoppa(gotoNextStepCallback);
         }
+
+        FxaModuleKeyNavigation.remove(
+          ['#fxa-email-input', '#fxa-email-clean-btn', '#fxa-module-next']);
       }.bind(this),
       this.showErrorResponse);
   };

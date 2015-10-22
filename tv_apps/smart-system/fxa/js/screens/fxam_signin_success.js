@@ -13,6 +13,10 @@ var FxaModuleSigninSuccess = (function() {
 
   var Module = Object.create(FxaModule);
 
+  Module.init = function init() {
+    FxaModuleUI.focusDoneButton();
+  };
+
   Module.onNext = function onNext(done) {
     done(FxaModuleStates.DONE);
   };
