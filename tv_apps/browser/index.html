@@ -20,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="style/search_result.css">
     <link rel="stylesheet" type="text/css" href="style/settings.css">
     <link rel="stylesheet" type="text/css" href="style/smartList.css">
+    <link rel="stylesheet" type="text/css" href="style/ifilter.css">
 
     <!-- Resources -->
     <link rel="resource" type="image/png" href="shared/resources/branding/browser_336.png">
@@ -38,6 +39,9 @@ ENDIF_FIREFOX_SYNC-->
     <!-- building blocks -->
     <script defer src="bower_components/evt/index.js"></script>
     <script defer src="bower_components/smart-button/script.js"></script>
+    <meta name="availableLanguages" content="de-DE:201506220909, es-ES:201506220909, nl-NL:201506220909, en-IE:201506220909, en-GB:201506220909, no-NO:201506220909, fi-FI:201506220909, fr-FR:201506220909, da-DK:201506220909, tr-TR:201506220909, it-IT:201506220909, sv-SE:201506220909, pt-PT:201506220909, el-GR:201506220909, hu-HU:201506220909, hr-HR:201506220909, cs-CZ:201506220909, ru-RU:201506220909, bg-BG:201506220909, ro-RO:201506220909, sk-SK:201506220909, sl-SI:201506220909, pl-PL:201506220909, sr-YU:201506220909, et-EE:201506220909, lv-LV:201506220909, lt-LT:201506220909, en-AU:201506220909, en-HK:201506220909, zh-CN:201506220909, ar:201506220909, fa:201506220909, th:201506220909, vi:201506220909, id:201506220909, zh-HK:201506220909, en-BR:201506220909, pt-BR:201506220909, es-BR:201506220909, hi:201506220909, zh-TW:201506220909, en-TW:201506220909, ja-JP:201506220909, en-US:201506220909, es-US:201506220909, fr-CA:201506220909, ru:201506220909, he:201506220909, my:201506220909, mk-MK:201506220909">
+    <link rel="manifest" href="manifest.webapp">
+    <link rel="localization" href="/locales-obj/{locale}.json">
 
     <!-- Shared code -->
     <script defer src="shared/js/url_helper.js"></script>
@@ -85,6 +89,8 @@ ENDIF_FIREFOX_SYNC-->
     <!-- <link rel="import" href="elements/fte.html"> -->
     <!-- <link rel="stylesheet" type="text/css" href="elements/fte.css"> -->
 
+    <script defer="" src="js/ifilter.js"></script>
+    <script defer="" src="js/remote.js"></script>
   </head>
 
   <body class="page_screen start_page" role="application">
@@ -93,7 +99,11 @@ ENDIF_FIREFOX_SYNC-->
 
     <!-- side -->
     <div id="side-block" class="side-window">
-      <!-- put widget here -->
+      <!-- tv -->
+      <div id="tv-block">
+        <video id="tv"></video>
+        <div id="tv-info"></div>
+      </div>
     </div>
 
     <!-- main -->
@@ -496,6 +506,7 @@ ENDIF_FIREFOX_SYNC-->
 <!--IFDEF_FIREFOX_SYNC
                   <li id="fxsync-block"><a id="fxsync-tab" href="#" data-l10n-id="fxsync-sign-in-to-sync"></a></li>
 ENDIF_FIREFOX_SYNC-->
+                  <li id="ifilter-block"><a id="ifilter-tab" href="#">フィルタリング設定</a></li>
                   <li id="settings-block"><a id="settings-tab" href="#" data-l10n-id="LT_APPS_SETTINGS"></a></li>
                 </div>
               </ul>
@@ -791,6 +802,55 @@ ENDIF_FIREFOX_SYNC-->
           </div>
         </div>
         <div id="settings-banner-message"></div>
+      </div>
+
+      <!-- i-filter -->
+      <div role="region" id="ifilter-list" class="skin-organic">
+        <div id="ifilter-list-area">
+          <div id="ifilter-header">
+            <p id="ifilter-header-title">フィルタリング設定</p>
+            <div id="ifilter-header-exp">
+              <p id="ifilter-header-exp1">フィルタリング機能とは、お子さまにブラウザで有害サイトを</p>
+              <br>
+              <p id="ifilter-header-exp2">見せないようにするための機能です。</p>
+            </div>
+          </div>
+          <div id="ifilter-list-item">
+            <div id="ifilter-offer">
+              <p id="ifilter-offer-title">申し込み手続き</p>
+            </div>
+            <div id="ifilter-func">
+              <p id="ifilter-func-title">フィルタリング機能</p>
+              <p id="ifilter-func-content"></p>
+            </div>
+            <div id="ifilter-server">
+              <p id="ifilter-server-title">サーバアドレス</p>
+              <p id="ifilter-server-content"></p>
+            </div>
+            <div id="ifilter-port">
+              <p id="ifilter-port-title">ポート番号</p>
+              <p id="ifilter-port-content"></p>
+            </div>
+            <div id="ifilter-id">
+              <p id="ifilter-id-title">ユーザーID</p>
+              <p id="ifilter-id-content"></p>
+            </div>
+          </div>
+        </div>
+        <div id="ifilter-dialog" class="hidden">
+          <div id="ifilter-dialog-func" class="hidden">
+            <div id="ifilter-dialog-func-header">
+              <p id="ifilter-dialog-func-header-title">フィルタリング機能</p>
+            </div>
+            <div id="ifilter-dialog-func-select">
+              <div id="ifilter-dialog-func-select-list"></div>
+            </div>
+            <div id="ifilter-dialog-func-button">
+              <button id="ifilter-dialog-func-cancel" data-l10n-id="LT_CANCEL">Cancel</button>
+              <button id="ifilter-dialog-func-ok" data-l10n-id="LT_WB_OK">OK</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- loading -->

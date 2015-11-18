@@ -42,6 +42,15 @@ var Browser = {
 
   hasLoaded: false,
 
+  // < launch_from >
+  // 0 : ICON
+  // 1 : BOOKMARK
+  // 2 : SMARTPHONE
+  // 3 : VOICE_SEARCH
+  // 4 : HOME_SEARCH
+  // 5 : URL_DIRECT
+  launch_from: 0,
+
   // < category >
   // 1 : web search
   // 2 : image search
@@ -84,8 +93,17 @@ var Browser = {
   returnApp: null,
   returnOpt: null,
 
+  // ASR jump mode
+  asrJumpMode: false,
+
   // Suspend flag
   isSuspend: false,
+
+  // tv info
+  tuner: null,
+  tvStore: null,
+  lastSource: null,
+  inputs: null,
 
   /**
    * Debug
@@ -110,9 +128,18 @@ var Browser = {
     document.addEventListener('keydown', this.keyHook.bind(this), true);
     // mouse move
     document.addEventListener('mousemove', this.mouseMove.bind(this), false);
+    // key press
+    document.addEventListener('keypress', this.keypress.bind(this), true);
+
 
     // init bookmark dialog
     Awesomescreen.init();
+
+    // tv info
+    this.tvStore = window.navigator.panaSystem.tvstore;
+    window.navigator.inputPortManager.getInputPorts().then(inputs => {
+      Browser.inputs = inputs;
+    });
 
     // init database
     BrowserDB.init((function() {
@@ -133,6 +160,8 @@ var Browser = {
         this.initSearchUtil();
         // init settings list
         Settings.init();
+        // init ifilter list
+        Ifilter.init();
         // init Toolbar
         Toolbar.init();
 
@@ -153,6 +182,9 @@ var Browser = {
       }).bind(this));
     }).bind(this));
 
+    // init ASR
+    this.initAsr();
+
     // init authentication dialog
     AuthenticationDialog.init();
 
@@ -170,6 +202,9 @@ var Browser = {
   },
 
   mouseMove: function browser_mouseMove(ev) {
+    if(this.asrJumpMode) {
+      this.stopAsrJumpMode();
+    }
 
     if(Toolbar.sidebarButtonBlock.dataset.fade == 'true') {
       Toolbar.sidebarButtonBlock.dataset.fade = 'false';
@@ -237,6 +272,11 @@ var Browser = {
       Awesomescreen.pointerImg.style.display = 'none';
       document.activeElement.blur();
     }
+    if( Ifilter.isDialogFuncDisplayed() ) {
+      Ifilter.blurFlag = true;
+      Awesomescreen.pointerImg.style.display = 'none';
+      document.activeElement.blur();
+    }
   },
 
   startScroll: function browser_startScroll(direction) {
@@ -298,18 +338,23 @@ var Browser = {
   initScreenMode: function browser_initScreenMode() {
     BrowserDB.db.open((function() {
       BrowserDB.getSetting('screen_mode', ((function(result) {
-        if(!result || result === 'full') {
+        if(result && result == 'full') {
           // Full screen
           Browser.sideBlock.dataset.sidebar = 'false';
           Browser.mainBlock.dataset.sidebar = 'false';
-          if(!result) {
-            // save screen mode
-            BrowserDB.updateSetting('full', 'screen_mode');
-          }
-        } else if (result === 'side') {
+          // hidden tv
+          var video = document.getElementById('tv');
+          video.mozSrcObject = null;
+        } else {
           // Disp side screen
           Browser.sideBlock.dataset.sidebar = 'true';
           Browser.mainBlock.dataset.sidebar = 'true';
+          // init tv
+          Browser.initTV();
+          if(!result || result != 'side') {
+            // save screen mode
+            BrowserDB.updateSetting('side', 'screen_mode');
+          }
         }
       }).bind(this)));
     }).bind(this));
@@ -359,6 +404,393 @@ var Browser = {
       // display search bar engine name
       Toolbar.setSearchEngine();
     }).bind(this));
+  },
+
+  /**
+   * init TV
+   */
+  initTV: function browser_initTV() {
+    var self = this;
+    var tv = window.navigator.mozTV;
+    var video = document.getElementById('tv');
+
+    if (!tv) {
+      console.log('===== failed to get mozTV. check permission. =====');
+      return;
+    }
+    video.focus();
+
+    tv.getTuners().then(function onsuccess(tuners) {
+      if (tuners.length > 0) {
+        self.tuner = tuners[0];
+        video.mozSrcObject = tuners[0].stream;
+        var source = JSON.parse(self.tvStore.get('lastMainSource'));
+        var input = self.getInputPort(source.type, source.idx);
+        self.lastSource = source.type;
+        if (input) {
+          self.fireInputChangedEvent(input, source.idx);
+        } else {
+          self.fireChannelChangedEvent(self.tuner.channel);
+        }
+        self.tvStore.addObserver('lastMainSource',
+          self.onSourceChanged.bind(self));
+        self.tuner.addEventListener('channelchanged',
+          self.onChannelChanged.bind(self), false);
+      }
+    }, function onerror(error) {
+      console.log('===== failed to getTuners. ', error);
+    });
+  },
+
+  setTvInfo: function browser_setTvInfo(param) {
+    if(param.name) {
+      switch(param.inputType) {
+      case 'arib-terr':
+        this.tvInfo.textContent = _('LT_CH_DIGITAL') + ' ' + param.name;
+        break;
+      case 'arib-bs':
+        this.tvInfo.textContent = _('LT_CH_BS') + ' ' + param.name;
+        break;
+      case 'arib-cs1':
+        this.tvInfo.textContent = _('LT_CH_CS1') + ' ' + param.name;
+        break;
+      case 'arib-cs2':
+        this.tvInfo.textContent = _('LT_CH_CS2') + ' ' + param.name;
+        break;
+      case 'input':
+        this.tvInfo.textContent = _('LT_INPUT') + ' ' + param.name;
+        break;
+      default:
+        this.tvInfo.textContent = param.name;
+        break;
+      }
+    } else if(param.nameLT) {
+      this.tvInfo.textContent = _(param.nameLT);
+    } else {
+      this.tvInfo.textContent = '';
+    }
+  },
+  getInputPort: function browser_getInputPort(type, port) {
+    if (this.inputs) {
+      var id = type + '://' + port;
+      for (var i = 0; i < this.inputs.length; i++) {
+        if (this.inputs[i].id == id) {
+          return this.inputs[i];
+        }
+      }
+    }
+    return false;
+  },
+  fireInputChangedEvent: function browser_fireInputChangedEvent(input, port) {
+    var param = {};
+    if (input) {
+      var names = this.getInputLabel(input.type, port);
+      param.hash = input.id;
+      param.name = names.name;
+      param.nameLT = names.nameLT;
+      param.inputType = input.type;
+      if (input.type === 'av') {
+        if (input.isScartInput) {
+          param.inputSubType = 'scart';
+        }
+        else {
+          param.inputSubType = input.avInputSrc;
+        }
+      }
+      else {
+        param.inputSubType = null;
+      }
+    }
+    this.setTvInfo(param);
+  },
+  fireChannelChangedEvent: function browser_fireChannelChangedEvent(channel) {
+    var param = {};
+    if (channel && channel.channelId) {
+      param.hash = channel.channelId;
+      param.name = channel.number + ' ' + channel.sname;
+      param.nameLT = null;
+      param.inputType = channel.sourceType;
+      param.inputSubType = null;
+    }
+    this.setTvInfo(param);
+  },
+  onSourceChanged: function browser_onSourceChanged() {
+    if (this.tvStore) {
+      var source = JSON.parse(this.tvStore.get('lastMainSource'));
+      var input = this.getInputPort(source.type, source.idx);
+      this.lastSource = source.type;
+      if (input) {
+        this.fireInputChangedEvent(input, source.idx);
+      }
+    }
+  },
+  onChannelChanged: function browser_onChannelChanged(event) {
+    var channel = event.channel;
+    this.fireChannelChangedEvent(channel);
+  },
+  getInputPortNum: function browser_getInputPortNum(type) {
+    var num = 0;
+    if (this.inputs) {
+      var i;
+      for (i = 0; i < this.inputs.length; i++) {
+        if (this.inputs[i].type === type) {
+          num++;
+        }
+      }
+    }
+    return num;
+  },
+  getInputLabel: function browser_getInputLabel(type, port) {
+    var id = type + port;
+    var labelData = this.tvStore.get('inputLabelName.' + id);
+    var portnum = this.getInputPortNum(type);
+    var result = {
+      name: null,
+      nameLT: null
+    };
+
+    switch (labelData) {
+    case 'LT_VCR':
+    case 'LT_DVD':
+    case 'LT_CABLE':
+    case 'LT_INP_SAT':
+    case 'LT_NETWORK':
+    case 'LT_PVR':
+    case 'LT_GAME':
+    case 'LT_STB':
+    case 'LT_BD':
+    case 'LT_TERR':
+    case 'LT_USER_INPUT':
+    case 'LT_DVD_REC':
+    case 'LT_DVR':
+    case 'LT_HOME_THTR':
+    case 'LT_RECEIVER':
+    case 'LT_COMPUTER':
+    case 'LT_MEDIA_CTR':
+    case 'LT_MEDIA_EXT':
+    case 'LT_CAMERA':
+    case 'LT_MONITOR2':
+    case 'LT_AUX':
+    case 'LT_OTHER2':
+    case 'LT_PC':
+    case 'LT_DVD1':
+    case 'LT_DVD2':
+    case 'LT_DISK':
+    case 'LT_DIGA':
+    case 'LT_HDD_RECORDER':
+      result.nameLT = labelData;
+      break;
+    case 'LT_DEFAULT':
+    case 'LT_LABEL_NOT_USED':
+    case 'LT_TITEL_NO_DISPLAY':
+      {
+        switch (id) {
+        case 'hdmi1':
+          if (portnum === 1) {
+            result.nameLT = 'LT_HDMI';
+          } else {
+            result.nameLT = 'LT_HDMI1';
+          }
+          break;
+        case 'hdmi2':
+          result.nameLT = 'LT_HDMI2';
+          break;
+        case 'hdmi3':
+          result.nameLT = 'LT_HDMI3';
+          break;
+        case 'hdmi4':
+          result.nameLT = 'LT_HDMI4';
+          break;
+        case 'av1':
+          if (portnum === 1) {
+            result.nameLT = 'LT_AV_COMPONENT';
+          } else {
+            result.nameLT = 'LT_AV1_COMPONENT1';
+          }
+          break;
+        case 'av2':
+          result.nameLT = 'LT_AV2_COMPONENT2';
+          break;
+        case 'displayport1':
+          result.nameLT = 'LT_DISPLAYPORT';
+          break;
+        default:
+          result.nameLT = 'LT_DEFAULT'; // error case
+          break;
+        }
+      }
+      break;
+    default:
+      result.name = labelData; // free input
+      break;
+    }
+    return result;
+  },
+
+  /**
+   * init ASR
+   */
+  initAsr: function browser_initAsr() {
+    if(!window.navigator.mozAsr){
+      console.log('***** Voice Control API (ASR) is Disabled *****');
+      return;
+    }
+    window.navigator.mozAsr.onmicstart = this.startAsr.bind(this);
+    window.navigator.mozAsr.onmicend = this.endAsr.bind(this);
+    window.navigator.mozSetMessageHandler('asr-event',
+        this.handleAsrEvent.bind(this));
+  },
+  // Start ASR
+  startAsr: function browser_startAsr() {
+    this.debug('***** Voice Control API (ASR) START *****');
+  },
+  // End ASR
+  endAsr: function browser_endAsr() {
+    this.debug('***** Voice Control API (ASR) END *****');
+  },
+
+  /**
+   * Handle ASR Event
+   */
+  handleAsrEvent: function broser_handleAsrEvent(message) {
+    if(message.appli_id != 'browser') {
+      return;
+    }
+
+    // Hide All
+    if(Settings.isDisplayed()) {
+      Settings.hide();
+    }
+    if(SearchResult.isDisplayed()) {
+      SearchResult.hide();
+    }
+    if(BrowserDialog.isDisplayed()) {
+      BrowserDialog.cancelDialog();
+    }
+    if(AuthenticationDialog.isDisplayed()) {
+      AuthenticationDialog.cancelHandler();
+    }
+    if(Awesomescreen.isDisplayedList()) {
+      Awesomescreen.listHidden();
+    }
+    if(Awesomescreen.isDisplayedDialog()) {
+      Awesomescreen.dialogHidden();
+    }
+    if(Awesomescreen.isDisplayedTab()) {
+      Awesomescreen.tabviewHidden();
+    }
+
+    var param = message.param;
+
+    if(param.action) {
+      if(Awesomescreen.isDisplayedTop()) return;
+      switch(param.action.id) {
+      case 'previous_page':
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
+        Toolbar.goBack();
+        break;
+      case 'next_page':
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
+        Toolbar.goForward();
+        break;
+      case 'scroll_up':
+      case 'page_up':
+        Browser.currentInfo.dom.scrollBy(0, -500);
+        break;
+      case 'scroll_down':
+      case 'page_down':
+        Browser.currentInfo.dom.scrollBy(0, 500);
+        break;
+      case 'scroll_left':
+      case 'page_left':
+        Browser.currentInfo.dom.scrollBy(-500, 0);
+        break;
+      case 'scroll_right':
+      case 'page_right':
+        Browser.currentInfo.dom.scrollBy(500, 0);
+        break;
+      case 'pin_to_home':
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
+        Awesomescreen.pinToHome();
+        break;
+      case 'zoom_in':
+        Toolbar.clickZoomButtonBlock();
+        break;
+      case 'zoom_out':
+        Toolbar.zoomOut();
+        break;
+      case 'add_bookmark':
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
+        Browser.addBookmark();
+        break;
+      case 'reload':
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
+        Toolbar.clickAddressButton();
+       break;
+      case 'change_screen':
+        Toolbar.showHideSidebar();
+        break;
+      case 'private_browsing':
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
+        Browser.handlePrivateBrowsing();
+        break;
+      case 'url_jump':
+        if(Awesomescreen.isDisplayedTop()) return;
+        if(param.keywords) {
+          if(this.currentInfo.dom.highlight) {
+            this.currentInfo.dom.highlight(false);
+            this.currentInfo.dom.highlight(true, param.keywords[0].word, true);
+            this.asrJumpMode = true;
+            this.switchCursorMode(false);
+          }
+        }
+        break;
+      default:
+        this.debug('asr message unknown id = ', param.action.id);
+        break;
+      }
+    } else if(param.browser_param) {
+      if(this.asrJumpMode) {
+        this.stopAsrJumpMode();
+      }
+      switch(param.browser_param.id) {
+      case 'internet':
+      case 'image':
+      case 'video':
+      case 'news':
+      case 'maps':
+      //case 'youtube':
+        this.keywordSearch(param);
+        break;
+      default:
+        this.debug('asr message unknown id = ', param.browser_param.id);
+        break;
+      }
+    } else if(param.keywords) {
+      if(this.asrJumpMode) {
+        this.stopAsrJumpMode();
+      }
+      this.keywordSearch({
+          'browser_param': { 'id': 'internet' },
+          'keywords': [
+              { 'word': param.keywords[0].word }
+          ]
+      });
+    } else {
+      this.debug('asr unknown message');
+    }
   },
   getLanguageUrl: function browser_getLanguageUrl() {
     var url_str = '';
@@ -531,7 +963,7 @@ var Browser = {
     var elementIDs = [
       'fade-base',
 
-      'side-block',
+      'side-block', 'tv-block', 'tv-info',
       'main-block',
       'web-block',
 
@@ -574,6 +1006,16 @@ var Browser = {
           tab.zoomInit = false;
           tab.dom.zoom(Toolbar.getDefaultZoomScale());
         }
+        if( tab.smaphoSetUrl ) {
+          if( tab.smaphoAddBookmark ) {
+            Remote.sendSmaphoAddBookmark(true);
+          } else {
+            Remote.sendSmaphoSetUrl(true);
+          }
+        }
+        if(this.asrJumpMode) {
+          this.stopAsrJumpMode();
+        }
         break;
 
       case 'mozbrowserloadend':
@@ -593,6 +1035,13 @@ var Browser = {
         tab.loading = false;
         this.refreshBrowserParts();
         this.initStartBrowsing();
+        if( tab.smaphoSetUrl ) {
+          tab.smaphoSetUrl = false;
+          if( tab.smaphoAddBookmark ) {
+            tab.smaphoAddBookmark = false;
+            Remote.addBookmark(tab);
+          }
+        }
 
         // get to favicon
         if( (tab.url != null) && (tab.url != "") && (!tab.iconUrl) ) {
@@ -704,9 +1153,16 @@ var Browser = {
 
       case 'mozbrowserusernameandpasswordrequired':
         this.debug('mozbrowserusernameandpasswordrequired[' + tab.id + ']');
-        tab.loading = false;
-        this.refreshBrowserParts();
-        AuthenticationDialog.handleEvent(evt, tab.id);
+        if( evt.detail.isProxy && Ifilter.currentFunc == Ifilter.FUNC_ON
+            && Ifilter.user_id != '' ){
+          console.log('ifilter proxy auth [' + Ifilter.user_id + ']');
+          evt.detail.authenticate( Ifilter.user_id, '' );
+        }
+        else {
+          tab.loading = false;
+          this.refreshBrowserParts();
+          AuthenticationDialog.handleEvent(evt, tab.id);
+        }
         break;
 
       case 'mozbrowsershowmodalprompt':
@@ -729,6 +1185,15 @@ var Browser = {
         evt.preventDefault();
         tab.loading = false;
         this.refreshBrowserParts();
+        if( tab.smaphoSetUrl ) {
+          tab.smaphoSetUrl = false;
+          if( tab.smaphoAddBookmark ) {
+            tab.smaphoAddBookmark = false;
+            Remote.sendSmaphoAddBookmark(false);
+          } else {
+            Remote.sendSmaphoSetUrl(false);
+          }
+        }
         if (evt.detail.type === 'fatal') {
           if( Awesomescreen.isDisplayedTab() ) Awesomescreen.tabviewHidden();
           this.handleCrashed(tab);
@@ -736,6 +1201,10 @@ var Browser = {
         setTimeout( function() {
           BrowserDialog.createDialog('error_browser', evt);
         }, 800);
+        break;
+
+      case 'mozbrowserasyncscroll':
+        this.debug('mozbrowserasyncscroll[' + tab.id + ']');
         break;
 
       default:
@@ -781,7 +1250,7 @@ var Browser = {
     var browserEvents = ['loadstart', 'loadend', 'locationchange',
                          'titlechange', 'iconchange', 'contextmenu',
                          'securitychange', 'openwindow', 'close',
-                         'showmodalprompt', 'error',
+                         'showmodalprompt', 'error', 'asyncscroll',
                          'usernameandpasswordrequired', 'memorypressure'];
     browserEvents.forEach(function attachBrowserEvent(type) {
       iframe.addEventListener('mozbrowser' + type,
@@ -824,6 +1293,8 @@ var Browser = {
         security: null,
         loading: false,
         alive: true,
+        smaphoSetUrl: false,
+        smaphoAddBookmark: false,
         timestamp: new Date().getTime()
       };
     }
@@ -890,6 +1361,7 @@ var Browser = {
   },
 
   closeBrowser: function browser_closeBrowser(ev) {
+    Remote.close(); // close TCPSocket
     self.close();
   },
 
@@ -960,6 +1432,7 @@ var Browser = {
       AuthenticationDialog.cancelHandler();
     }
     if( Settings ) Settings.hide();
+    if( Ifilter ) Ifilter.hide();
     if( Awesomescreen ) Awesomescreen.allHidden();
     if( SearchResult ) SearchResult.hide();
   },
@@ -970,7 +1443,41 @@ var Browser = {
    * @param {Array} bookmarks List of bookmark data objects.
    */
   populateBookmarks: function browser_populateBookmarks(bookmarks) {
-    Awesomescreen.selectTopSites();
+    this.debug( ' launch_from = ' + this.launch_from );
+    switch( this.launch_from ) {
+      case 0 : // from ICON
+        Awesomescreen.selectTopSites();
+        this.launch_from = -1;
+        break;
+
+      case 1 : // from BOOKMARK(WEBLINK)
+        this.launch_from = -1;
+        break;
+
+      case 2 : // from SMARTPHONE
+        Awesomescreen.selectTopSites();
+        this.launch_from = -1;
+        break;
+
+      case 3 : // from VOICE_SEARCH
+      case 4 : // from HOME_SEARCH
+        if(( this.category > 0 ) && ( this.keyword != '' )) {
+          var searchList = SearchUtil.getCurrentSearchUrl();
+          var url = searchList[ this.category - 1 ] + this.keyword;
+          this.debug(' search url = ' + url);
+          this.navigate( url );
+        }
+        this.launch_from = -1;
+        break;
+
+      case 5 : // from DIRECT LAUNCH
+        var url = this.start_page_url;
+        if(( url != null ) && ( url != "" )) {
+          this.navigate(url);
+        }
+        this.launch_from = -1;
+        break;
+    }
   },
 
   handleActivity: function browser_handleActivity(activity) {
@@ -983,6 +1490,73 @@ var Browser = {
             var url = this.getUrlFromInput(activity.source.data.url);
             this.debug(' url = ' + url);
             connectionHandler.openPage(url);
+            this.start_page_url = url;
+            break;
+        }
+        break;
+      case 'pana_apps_launch':
+      case 'pana_apps_launch_inline':
+        this.launch_from = activity.source.data.arg.launch_from || 0;
+        this.debug( ' launch_from = ' + this.launch_from );
+        switch( this.launch_from ) {
+          case 0: // from ICON
+            this.start_page_url = '';
+            if( this.currentInfo ) {
+              this.launch_from = -1;
+            }
+            break;
+          case 1: // from BOOKMARK(WEBLINK but not used...)
+          case 5: // from URL_DIRECT
+            var url = this.getUrlFromInput( activity.source.data.arg.url );
+            this.debug( ' url = ' + url );
+            this.start_page_url = url;
+            if( this.currentInfo ) {
+              this.variousWindowErase();
+              this.launch_from = -1;
+              if(( this.currentInfo.url != null ) && ( this.currentInfo.url != '' )) {
+                var evt = new Object();
+                evt.detail = { url: url, frameElement: null };
+                Awesomescreen.openNewTab(evt);
+              } else {
+                this.navigate(url);
+              }
+            }
+            break;
+          case 2: // SMARTPHONE
+            break;
+          case 3: // VOICE_SEARCH
+          case 4: // HOME_SEARCH
+            for (var i=0; i<this.categoryTbl.length; i++) {
+              if (this.categoryTbl[i].category == activity.source.data.arg.category || 0) {
+                this.category = this.categoryTbl[i].id;
+              }
+            }
+            this.keyword  = activity.source.data.arg.keyword || '';
+            this.debug( ' category = ' + this.category +
+                         ' , keyword = ' + this.keyword );
+            if (activity.source.data.returnApp) {
+              this.returnApp = activity.source.data.returnApp;
+            }
+            if (activity.source.data.returnOpt) {
+              this.returnOpt = activity.source.data.returnOpt;
+            }
+            if( this.currentInfo ) {
+              if(( this.category > 0 ) && ( this.keyword != '' )) {
+                var searchList = SearchUtil.getCurrentSearchUrl();
+                var url = searchList[ this.category - 1 ] + this.keyword;
+                this.debug(' search url = ' + url);
+
+                this.variousWindowErase();
+                this.launch_from = -1;
+                if(( this.currentInfo.url != null ) && ( this.currentInfo.url != '' )) {
+                  var evt = new Object();
+                  evt.detail = { url: url, frameElement: null };
+                  Awesomescreen.openNewTab(evt);
+                } else {
+                  this.navigate(url);
+                }
+              }
+            }
             break;
         }
         break;
@@ -994,8 +1568,7 @@ var Browser = {
    */
   getLanguage: function browser_getLanguage() {
     this.language = this.DEFAULT_LANG;
-    // XXX: replace this with navigator.language
-    var getLang = null;
+    var getLang = this.tvStore.get('languageEnv');
     if(getLang){
       var lang = getLang;
       Browser.language = lang;
@@ -1010,8 +1583,7 @@ var Browser = {
    */
   getCountry: function browser_getCountry(cb) {
     this.country = this.DEFAULT_COUNTRY;
-    // XXX: replace this with navigator.language
-    var getCountry = null;
+    var getCountry = this.tvStore.get('countryEnv');
     if(getCountry){
       Browser.country = getCountry;
       Browser.tvBlock.dataset.model = getCountry;
@@ -1062,15 +1634,48 @@ var Browser = {
     } else {
       return;
     }
-
+    var inputSet = window.navigator.panaInputDeviceSetting;
     Toolbar.clearDragMode();
+    if( mode ) {
+      inputSet.setMouseMode('enable');
+      inputSet.setTouchPadMode('mouse');
+      inputSet.setRemoteArrowKeyMode('mouse');
+      // inputSet.setKeyboardArrowKeyMode('arrow-key');
+    } else {
+      inputSet.setMouseMode('disable');
+      inputSet.setTouchPadMode('arrow-key');
+      inputSet.setRemoteArrowKeyMode('arrow-key');
+      // inputSet.setKeyboardArrowKeyMode('arrow-key');
+    }
   },
 
   /**
    * key hook
    */
+  preventDefaultForVideo: function browser_preventDefaultForVideo(ev) {
+    if(Browser.sideBlock.dataset.sidebar == 'true'){
+      switch (ev.keyCode) {
+      case KeyEvent.DOM_VK_NET_TD:
+      case KeyEvent.DOM_VK_NET_BS:
+      case KeyEvent.DOM_VK_NET_CS:
+      case KeyEvent.DOM_VK_CHG_INPUT:
+      case KeyEvent.DOM_VK_F_CHG_INPUT:
+      case KeyEvent.DOM_VK_F4:
+      case KeyEvent.DOM_VK_AD_CHANGE:
+        ev.preventDefault();
+        break;
+      default:
+        break;
+      }
+    }
+  },
   keyHook: function browser_keyHook(ev) {
     this.debug('kc = ' + ev.keyCode);
+    if(this.asrJumpMode) {
+      this.asrKeyHook(ev);
+      this.preventDefaultForVideo(ev);
+      return;
+    }
 
     if(ev.keyCode == KeyEvent.DOM_VK_BACK_SPACE) {
       if(Toolbar.toolbarPanel.dataset.menu == 'show') {
@@ -1081,27 +1686,38 @@ var Browser = {
 
     if(BrowserDialog.isDisplayed()) {
       BrowserDialog.handleKeyEvent(ev);
+      this.preventDefaultForVideo(ev);
       return;
     }
     if(AuthenticationDialog.isDisplayed()) {
       AuthenticationDialog.handleKeyEvent(ev);
+      this.preventDefaultForVideo(ev);
       return;
     }
     if(Settings.isDisplayed()) {
       Settings.handleKeyEvent(ev);
+      this.preventDefaultForVideo(ev);
+      return;
+    }
+    if(Ifilter.isDisplayed()) {
+      Ifilter.handleKeyEvent(ev);
+      this.preventDefaultForVideo(ev);
       return;
     }
     if(Awesomescreen.isDisplayed()) {
       if(!Awesomescreen.handleKeyEvent(ev)){
+        this.preventDefaultForVideo(ev);
         return;
       }
     }
     if(SearchResult.isDisplayed()) {
       SearchResult.handleKeyEvent(ev);
+      this.preventDefaultForVideo(ev);
       return;
     }
     // in the input area focus (= display keyboard)
     if(document.activeElement.nodeName == 'INPUT') {
+      this.preventDefaultForVideo(ev);
       return;
     }
 
@@ -1143,8 +1759,85 @@ var Browser = {
       break;
 
     default:
+      if(Browser.sideBlock.dataset.sidebar == 'true'){
+        // fall through other key events to side TV
+        var tv = window.navigator.mozTV;
+        if(tv) {
+          var video = document.getElementById('tv');
+          var curElement = document.activeElement;
+          if(curElement != video) {
+            video.focus();
+            var newEvt = document.createEvent("KeyboardEvent");
+            newEvt.initKeyEvent(ev.type, ev.canBubble, ev.cancelable,
+                ev.view, ev.ctrlKey, ev.altKey, ev.shiftKey,
+                ev.metaKey, ev.keyCode, ev.charCode);
+            video.dispatchEvent(newEvt);
+          }
+        }
+        this.preventDefaultForVideo(ev);
+      }
       break;
     }
+  },
+
+
+  /**
+   * keypress
+   */
+  keypress: function browser_keypress(ev) {
+    if( (Awesomescreen.isDisplayedList()) && (!(Awesomescreen.isDisplayedDialog())) ){
+      ev.preventDefault();
+      setTimeout( function() {
+        if(Awesomescreen.exeflag && (ev.keyCode == KeyEvent.DOM_VK_UP || ev.keyCode == KeyEvent.DOM_VK_DOWN )){
+          Awesomescreen.listDialogKeyCont(ev, ev.target);
+        }
+      }, 100);
+    }
+
+ },
+
+  /**
+   * ASR key hook(jump mode)
+   */
+  asrKeyHook: function browser_asrKeyHook(ev) {
+    switch (ev.keyCode) {
+    case KeyEvent.DOM_VK_UP :
+    case KeyEvent.DOM_VK_LEFT :
+      if(this.currentInfo.dom.findAgain) {
+        this.currentInfo.dom.findAgain(true, true);
+      }
+      break;
+    case KeyEvent.DOM_VK_DOWN :
+    case KeyEvent.DOM_VK_RIGHT :
+      if(this.currentInfo.dom.findAgain) {
+        this.currentInfo.dom.findAgain(false, true);
+      }
+      break;
+    case KeyEvent.DOM_VK_RETURN :
+      if(this.currentInfo.dom.selectLink) {
+        this.currentInfo.dom.selectLink();
+        this.stopAsrJumpMode();
+      }
+      break;
+    case KeyEvent.DOM_VK_BACK_SPACE:
+      this.stopAsrJumpMode();
+      break;
+
+    default:
+      this.stopAsrJumpMode();
+      break;
+    }
+  },
+
+  /**
+   * Stop asr jump mode
+   */
+  stopAsrJumpMode: function browser_stopAsrJumpMode() {
+    if(this.currentInfo.dom.highlight) {
+      this.currentInfo.dom.highlight(false);
+    }
+    this.asrJumpMode = false;
+    this.switchCursorMode(true);
   },
 
   /**
@@ -1161,6 +1854,7 @@ var Browser = {
       Browser.start_page_url = new_url;
       if( !Browser.currentInfo ) {
         Browser.debug("launching page from start_page_url after tab initialized");
+        Browser.launch_from = 5;
       } else {
         Browser.variousWindowErase();
         if(( Browser.currentInfo.url != null ) && ( Browser.currentInfo.url != '' )) {
@@ -1182,16 +1876,22 @@ document.addEventListener('visibilitychange', function browser_VisivilityChange(
     Browser.isSuspend = true;
     Browser.variousWindowErase();
     if(Browser.sideBlock.dataset.sidebar == 'true'){
-      // XXX: open side block
+      var video = document.getElementById('tv');
+      video.mozSrcObject = null;
     }
     if( Browser.currentInfo ) Browser.refreshBrowserParts();
+    Remote.suspend();
   } else {
     Browser.debug('browser resume...');
     Browser.isSuspend = false;
     if(Browser.sideBlock.dataset.sidebar == 'true') {
-      // XXX: open side block
+      var video = document.getElementById('tv');
+      if(video.mozSrcObject == null) {
+        Browser.initTV();
+      }
     }
     //Browser.hashChange();
+    Remote.init();
     if(Browser.currentInfo) {
       if(( Browser.currentInfo.url == null ) || ( Browser.currentInfo.url == '' )) {
         Awesomescreen.selectTopSites();
@@ -1211,6 +1911,7 @@ window.addEventListener('load', function browserOnLoad(evt) {
   mozL10n.ready(function() {
     // hash change param
     Browser.hashChange();
+    Remote.init(); // init TCPSocket
     Browser.init();
   }.bind(this));
 });

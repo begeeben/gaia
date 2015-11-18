@@ -183,6 +183,47 @@ var BrowserDialog = {
         this.deferredActions.set('signout_confirm', deferred);
         break;
 //ENDIF_FIREFOX_SYNC
+      case 'ifilter_func':
+        var txt = 'プロキシを使ったネットワーク環境において、'
+                + 'フィルタリング設定をオンにすると'
+                + 'ブラウザは使用できません。';
+        opt = {
+          title: null,
+          msg: txt,
+          bt1: '了解',
+          bt2: null
+        };
+        break;
+
+      case 'ifilter_server':
+        opt = {
+          title: null,
+          msg: 'サーバアドレス',
+          max: 64,
+          bt1: _('LT_CANCEL'),
+          bt2: _('LT_WB_OK')
+        };
+        break;
+
+      case 'ifilter_port':
+        opt = {
+          title: null,
+          msg: 'ポート番号',
+          max: 5,
+          bt1: _('LT_CANCEL'),
+          bt2: _('LT_WB_OK')
+        };
+        break;
+
+      case 'ifilter_id':
+        opt = {
+          title: null,
+          msg: 'ユーザーID',
+          max: 19,
+          bt1: _('LT_CANCEL'),
+          bt2: _('LT_WB_OK')
+        };
+        break;
 
       default:
         return;
@@ -224,7 +265,8 @@ var BrowserDialog = {
       width -= Browser.SIDE_WINDOW_WIDTH;
     }
 
-    if(type == 'prompt') {
+    if(( type == 'prompt'     ) || ( type == 'ifilter_server' ) ||
+       ( type == 'ifilter_id' ) || ( type == 'ifilter_port'   )) {
       this.browserDialogInput.style.display = 'block';
       this.browserDialogInput.classList.remove('exfocus');
       this.browserDialogInput.classList.remove('input');
@@ -234,13 +276,38 @@ var BrowserDialog = {
       this.focusElement[1][countIndex++] = this.browserDialogInputClear;
       //this.browserDialogInput.insertBefore(this.browserDialogInputArea,
       //                                     this.browserDialogInputClear);
-      this.browserDialogInputArea.type = 'text';
-      this.browserDialogInputArea.value = '';
     } else {
       this.browserDialogInput.style.display = 'none';
     }
 
-    // initialize position
+    switch( type ) {
+      case 'prompt' :
+        this.browserDialogInputArea.type = 'text';
+        this.browserDialogInputArea.value = '';
+        break;
+
+      case 'ifilter_server' :
+        this.browserDialogInputArea.type = 'text';
+        this.browserDialogInputArea.maxLength = opt.max;
+        this.browserDialogInputArea.value = Ifilter.getServer();
+        break;
+
+      case 'ifilter_port' :
+        this.browserDialogInputArea.type = 'number';
+        this.browserDialogInputArea.maxLength = opt.max;
+        this.browserDialogInputArea.min  = this.PORT_MIN;
+        this.browserDialogInputArea.max  = this.PORT_MAX;
+        this.browserDialogInputArea.value = Ifilter.getPort();
+        break;
+
+      case 'ifilter_id' :
+        this.browserDialogInputArea.type = 'text';
+        this.browserDialogInputArea.maxLength = opt.max;
+        this.browserDialogInputArea.value = Ifilter.getId();
+        break;
+    }
+
+    // initiarlize position
     countIndex = 0;
     if(opt.bt1 && opt.bt2) {
       this.defaultFocusIndex.x = 0;
@@ -312,6 +379,10 @@ var BrowserDialog = {
       case 'prompt':
       case 'confirm':
       case 'signout_confirm':
+      case 'ifilter_func':
+      case 'ifilter_server':
+      case 'ifilter_port':
+      case 'ifilter_id':
         this.dialogButton2End(evt.currentTarget);
         break;
 
@@ -414,6 +485,37 @@ var BrowserDialog = {
 
       case 'signout_confirm':
         BrowserDialog.dialogButton2End(BrowserDialog.argEvt);
+      case 'ifilter_server':
+        if( this.browserDialogInputArea.value == '' ) {
+          var server = Ifilter.getDefaultServer();
+          Ifilter.setServer(server);
+        } else {
+          Ifilter.setServer(this.browserDialogInputArea.value);
+        }
+        //this.cancelDialog();
+        this.dialogButton2End(this.argEvt);
+        break;
+
+      case 'ifilter_port':
+        if( this.browserDialogInputArea.value.indexOf('.') != -1 ) break;
+        if( this.browserDialogInputArea.value == '' ) {
+          var port = Ifilter.getDefaultPort();
+          Ifilter.setPort(port);
+        } else {
+          if(( this.browserDialogInputArea.value < this.PORT_MIN ) &&
+             ( this.browserDialogInputArea.value > this.PORT_MAX )) {
+            break;
+          }
+          Ifilter.setPort(this.browserDialogInputArea.value);
+        }
+        //this.cancelDialog();
+        this.dialogButton2End(this.argEvt);
+        break;
+
+      case 'ifilter_id':
+        Ifilter.setId(this.browserDialogInputArea.value);
+        //this.cancelDialog();
+        this.dialogButton2End(this.argEvt);
         break;
 
       default:

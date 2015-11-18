@@ -15,7 +15,7 @@ var Awesomescreen = {
 
   DEFAULT_FAVICON: 'style/images/default-fav.svg',
   DEFAULT_TAB_ADD: 'style/images/add-tab.svg',
-  DEFAULT_SCREENSHOT: 'style/images/mozilla_screenshot.png',
+  DEFAULT_SCREENSHOT: 'style/images/panasonic_img.jpg',
   DEFAULT_BOOKMARK: 'Bookmark',
   DEFAULT_HISTORY: 'History',
   DEFAULT_TABVIEW: 'Tabview',
@@ -1143,10 +1143,17 @@ var Awesomescreen = {
       case this.DEFAULT_BOOKMARK:
         elementIDs = [this.pinhomeButton, this.removeBookmarkButton,
                       this.editButton];
-        this.focusList.push(this.pinhomeButton);
-        this.focusList.push(this.removeBookmarkButton);
-        this.focusList.push(this.editButton);
-        this.focusPos = this.focusList.length - 3;
+        if (this.isSetupLockActive()) {
+          elementIDs.splice(0,1);
+          this.focusList.push(this.removeBookmarkButton);
+          this.focusList.push(this.editButton);
+          this.focusPos = this.focusList.length - 2;
+        }else{
+          this.focusList.push(this.pinhomeButton);
+          this.focusList.push(this.removeBookmarkButton);
+          this.focusList.push(this.editButton);
+          this.focusPos = this.focusList.length - 3;
+        }
         this.elementSetDisplayBlock(elementIDs);
         this.elementSetTabindex(elementIDs);
         break;
@@ -1154,10 +1161,18 @@ var Awesomescreen = {
       case this.DEFAULT_HISTORY:
         elementIDs = [this.pinhomeButton, this.clhistoryButton,
                       this.removeButton];
-        this.focusList.push(this.pinhomeButton);
-        this.focusList.push(this.clhistoryButton);
-        this.focusList.push(this.removeButton);
-        this.focusPos = this.focusList.length - 3;
+        if (this.isSetupLockActive()) {
+          elementIDs.splice(0,1);
+
+          this.focusList.push(this.removeButton);
+          this.focusList.push(this.clhistoryButton);
+          this.focusPos = this.focusList.length - 2;
+        }else{
+          this.focusList.push(this.pinhomeButton);
+          this.focusList.push(this.clhistoryButton);
+          this.focusList.push(this.removeButton);
+          this.focusPos = this.focusList.length - 3;
+        }
         this.elementSetDisplayBlock(elementIDs);
         this.elementSetTabindex(elementIDs);
         break;
@@ -1165,6 +1180,9 @@ var Awesomescreen = {
       case this.DEFAULT_TOPSITE:
         elementIDs = [this.pinhomeButton, this.sethomeButton,
                       this.removeTopsiteButton];
+        if (this.isSetupLockActive()) {
+          elementIDs.splice(0,1);
+        }
         this.elementSetDisplayBlock(elementIDs);
         this.elementSetTabindex(elementIDs);
         this.focusList.push(this.pinhomeButton);
@@ -1246,6 +1264,10 @@ var Awesomescreen = {
            this.removeBookmarkButton
         ];
 
+    if (this.isSetupLockActive()) {
+      elementIDs.splice(8,1);
+    }
+
     // Loop and add element with camel style name to Modal Dialog attribute.
     this.elementSetTabindexClear(elementIDs);
 
@@ -1257,6 +1279,10 @@ var Awesomescreen = {
            this.removeTopsiteButton, this.renameConfirmButton,
            this.sethomeButton, this.removeBookmarkButton
         ];
+
+    if (this.isSetupLockActive()) {
+      elementIDs2.splice(8,1);
+    }
 
     // Loop and add element with camel style name to Modal Dialog attribute.
     this.elementSetDisplayNone(elementIDs2);
@@ -1614,6 +1640,16 @@ var Awesomescreen = {
       );
     }).bind(this);
     target.addEventListener('transitionend', end_event, false);
+  },
+
+  isSetupLockActive: function awesomescreen_isSetupLockActive() {
+    var tvstore = navigator.panaSystem.tvstore;
+    if(tvstore.get('smartLock.enable') === true &&
+       tvstore.get('smartLock.setupLock') === true) {
+      return true;
+    }else{
+      return false;
+    }
   },
 
   dialogShow: function awesomescreen_dialogShow(type) {
@@ -2673,10 +2709,23 @@ var Awesomescreen = {
           case this.isDisplayedDialog() :
             break;
           case this.isDisplayedTop() && !(this.isDisplayedTab()):
-            if(hoverElem == this.topSites){
-              state = true;
-            } else if( (this.selectList) &&
-              (this.selectList.className.contains('top-site-item')) ) {
+            if (hoverElem == this.topSites) {
+              var tv = window.navigator.mozTV;
+              if (tv) {
+                var video = document.getElementById('tv');
+                var curElement = document.activeElement;
+                if (curElement != video) {
+                  video.focus();
+                  var newEvt = document.createEvent("KeyboardEvent");
+                  newEvt.initKeyEvent(ev.type, ev.canBubble, ev.cancelable,
+                    ev.view, ev.ctrlKey, ev.altKey, ev.shiftKey,
+                    ev.metaKey, ev.keyCode, ev.charCode);
+                  video.dispatchEvent(newEvt);
+                }
+              }
+              return true;
+            }
+            if ((this.selectList) && (this.selectList.className.contains('top-site-item'))) {
               this.optionDialogOpen();
               state = false;
             }
