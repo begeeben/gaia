@@ -290,7 +290,7 @@ var Ifilter = {
       if( this.selectFunc == this.FUNC_ON ) {
         dialog = true;
         var cset = {};
-        cset['browser.proxy.app_origins'] = "app://0077777700140002.myhomescreen.tv";
+        cset['browser.proxy.app_origins'] = "app://0077777700160002.myhomescreen.tv";
         cset['browser.proxy.enabled'] = true;
         cset['browser.proxy.host'] = this.getServer();
         cset['browser.proxy.port'] = this.getPort();

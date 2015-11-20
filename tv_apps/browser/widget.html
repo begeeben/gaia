@@ -1,19 +1,19 @@
-<!DOCTYPE html>
-<html lang="en-US" dir="ltr">
+<!DOCTYPE HTML>
+<html lang="ja-JP">
   <head>
     <meta charset="UTF-8">
     <title>WebClip</title>
-    <link rel="localization" href="/locales-obj/{locale}.json">
-    <link type="text/css" rel="stylesheet" href="style/widget_style.css">
-    <script defer="" src="/shared/js/l10n.js"></script>
+    <link rel="localization" href="locales/browser14.{locale}.pana.properties"/>
+    <link type="text/css" rel="stylesheet" href="style/widget_style.css"></link>
+    <script defer src="/shared/js/l10n.js"></script>
     <script src="shared/js/async_storage.js"></script>
-    <script defer="" src="js/browser_db.js"></script>
-    <script defer="" src="js/brwclip.js"></script>
-  <meta content="de-DE:201506220909, es-ES:201506220909, nl-NL:201506220909, en-IE:201506220909, en-GB:201506220909, no-NO:201506220909, fi-FI:201506220909, fr-FR:201506220909, da-DK:201506220909, tr-TR:201506220909, it-IT:201506220909, sv-SE:201506220909, pt-PT:201506220909, el-GR:201506220909, hu-HU:201506220909, hr-HR:201506220909, cs-CZ:201506220909, ru-RU:201506220909, bg-BG:201506220909, ro-RO:201506220909, sk-SK:201506220909, sl-SI:201506220909, pl-PL:201506220909, sr-YU:201506220909, et-EE:201506220909, lv-LV:201506220909, lt-LT:201506220909, en-AU:201506220909, en-HK:201506220909, zh-CN:201506220909, ar:201506220909, fa:201506220909, th:201506220909, vi:201506220909, id:201506220909, zh-HK:201506220909, en-BR:201506220909, pt-BR:201506220909, es-BR:201506220909, hi:201506220909, zh-TW:201506220909, en-TW:201506220909, ja-JP:201506220909, en-US:201506220909, es-US:201506220909, fr-CA:201506220909, ru:201506220909, he:201506220909, my:201506220909, mk-MK:201506220909" name="availableLanguages"><meta content="en-US" name="defaultLanguage"></head>
+    <script defer src="js/browser_db.js"></script>
+    <script defer src="js/brwclip.js"></script>
+  </head>
   <body>
     <div id="cp-title">
       <div id="main_title" class="word_outer fade_act">
-	<img id="loading" class="disappear" src="style/webclip/loading.png">
+	<img id="loading" class="disappear" src="style/webclip/loading.png" />
       	<div class="word_inner">
           <div id="title" class="word_content"></div>
       	</div>
@@ -29,7 +29,7 @@
 	<div id="frm_back"></div>
       </div>
       <div id="clip">
-	<img id="cap_img" class="fade_act disappear">
+	<img id="cap_img" class="fade_act disappear"/>
 	<div id="cap_msg" class="msg_outer">
 	  <div class="msg_inner">
 	    <div id="connect_msg">Please setup network connection.</div>
@@ -39,44 +39,44 @@
       <div id="icon" class="hide fade_act">
 	<div id="button_box">
 	  <div id="img_change" class="button">
-	    <img class="default" src="style/webclip/change.png">
-	    <img class="focus" src="style/webclip/change_f.png">
+	    <img class="default" src="style/webclip/change.png"/>
+	    <img class="focus" src="style/webclip/change_f.png"/>
 	  </div>
 	  <div id="img_big" class="button">
-	    <img class="default" src="style/webclip/big.png">
-	    <img class="focus" src="style/webclip/big_f.png">
+	    <img class="default"  src="style/webclip/big.png"/>
+	    <img class="focus" src="style/webclip/big_f.png"/>
 	  </div>
 	  <div id="img_small" class="button">
-	    <img class="default" src="style/webclip/small.png">
-	    <img class="focus" src="style/webclip/small_f.png">
+	    <img class="default" src="style/webclip/small.png"/>
+	    <img class="focus" src="style/webclip/small_f.png"/>
 	  </div>
 	  <div id="img_up" class="button">
-	    <img class="default" src="style/webclip/up.png">
-	    <img class="focus" src="style/webclip/up_f.png">
+	    <img class="default" src="style/webclip/up.png"/>
+	    <img class="focus" src="style/webclip/up_f.png"/>
 	  </div>
 	  <div id="img_down" class="button">
-	    <img class="default" src="style/webclip/down.png">
-	    <img class="focus" src="style/webclip/down_f.png">
+	    <img class="default" src="style/webclip/down.png"/>
+	    <img class="focus" src="style/webclip/down_f.png"/>
 	  </div>
 	  <div id="img_left" class="button">
-	    <img class="default" src="style/webclip/left.png">
-	    <img class="focus" src="style/webclip/left_f.png">
+	    <img class="default" src="style/webclip/left.png"/>
+	    <img class="focus" src="style/webclip/left_f.png"/>
 	  </div>
 	  <div id="img_right" class="button">
-	    <img class="default" src="style/webclip/right.png">
-	    <img class="focus" src="style/webclip/right_f.png">
+	    <img class="default" src="style/webclip/right.png"/>
+	    <img class="focus" src="style/webclip/right_f.png"/>
 	  </div>
 	  <div id="img_return" class="button">
-	    <img class="default" src="style/webclip/return.png">
-	    <img class="focus" src="style/webclip/return_f.png">
+	    <img class="default" src="style/webclip/return.png"/>
+	    <img class="focus" src="style/webclip/return_f.png"/>
 	  </div>
 	</div>
       </div>
     </div>
     <div id="bar">
 	<div id="img_setting" class="button-2 fade_act hide">
-	  <img class="default" src="style/webclip/setting.png">
-	  <img class="focus" src="style/webclip/setting_f.png">
+	  <img class="default" src="style/webclip/setting.png"/>
+	  <img class="focus" src="style/webclip/setting_f.png"/>
 	</div>
     </div>
     <div id="select_page" class="hide fade_act">
@@ -90,5 +90,4 @@
       </div>
     </div>
   </body>
-
 </html>

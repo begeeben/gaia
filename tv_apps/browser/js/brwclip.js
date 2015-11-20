@@ -270,7 +270,7 @@ Events.jumpToBrowser = function() {
 	new MozActivity({
 	    name: "pana_apps_launch",
 	    data: {
-		"productid":"0077777700140002",
+		"productid":"0077777700160002",
 		"arg":{
 		    "launch_from":5,
 		    "url":StorageObj.url

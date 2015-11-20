@@ -1,7 +1,7 @@
 {
   "name": "Browser",
   "description": "Browser",
-  "version": "9",
+  "version": "10",
   "launch_path": "/index.html",
   "type": "certified",
   "role": "deck",
@@ -105,12 +105,12 @@
       "description": "Browser"
     },
     "fr-CA": {
-      "name": "Browser",
-      "description": "Browser"
+      "name": "Navigateur",
+      "description": "Navigateur"
     },
     "fr-FR": {
-      "name": "Browser",
-      "description": "Browser"
+      "name": "Navigateur",
+      "description": "Navigateur"
     },
     "hi": {
       "name": "Browser",
@@ -239,7 +239,7 @@
     "pana_apps_launch":{
       "href": "/index.html",
       "filters":{
-        "productid": "0077777700140002"
+        "productid": "0077777700160002"
       }
     }
   },
@@ -259,12 +259,12 @@
       "rules": {}
     }
   },
-  "origin": "app://0077777700140002.myhomescreen.tv",
+  "origin": "app://0077777700160002.myhomescreen.tv",
   "messages": [
      { "asr-event": "/index.html" }
   ],
   "panasonic_extension" : {
-    "productid": "0077777700140002",
+    "productid": "0077777700160002",
     "disclaimer": false,
     "latest_check": false,
     "restricted": false,
