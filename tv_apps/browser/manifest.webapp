@@ -1,38 +1,227 @@
 {
   "name": "Browser",
   "description": "Browser",
+  "version": "10",
   "launch_path": "/index.html",
   "type": "certified",
   "role": "deck",
   "permissions": {
     "browser":{},
     "systemXHR":{},
+    "storage": {},
     "desktop-notification" : {},
     "firefox-accounts": {},
     "moz-extremely-unstable-and-will-change-webcomponents":{},
-    "settings": { "access": "readwrite" }
+    "settings": { "access": "readwrite" },
+    "device-storage:apps_nv" : { "access": "readwrite" },
+    "tcp-socket" : { "discription" : "for TV-Remote." },
+    "tv": {},
+    "pana-ext":{},
+    "settings:browser.proxy.app_origins":{"access": "readwrite"},
+    "settings:browser.proxy.enabled":{"access": "readwrite"},
+    "settings:browser.proxy.host":{"access": "readwrite"},
+    "settings:browser.proxy.port":{"access": "readwrite"}
   },
   "locales": {
     "ar": {
-      "name": "المتصفح",
-      "description": "متصفح الويب"
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "bg-BG": {
+      "name": "Browser",
+      "description": "Browser",
+      "developer": {
+        "name": "Panasonic"
+      }
+    },
+    "cs-CZ": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "da-DK": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "de-DE": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "el-GR": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "en-AU": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "en-BR": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "en-GB": {
+      "name": "Browser",
+      "description": "Browser",
+      "developer": {
+        "name": "Panasonic"
+      }
+    },
+    "en-HK": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "en-IE": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "en-TW": {
+      "name": "Browser",
+      "description": "Browser"
     },
     "en-US": {
       "name": "Browser",
-      "description": "Web Browser"
+      "description": "Browser",
+      "developer": {
+        "name": "Panasonic"
+      }
     },
-    "fr": {
+    "es-BR": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "es-ES": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "es-US": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "et-EE": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "fi-FI": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "fr-CA": {
       "name": "Navigateur",
-      "description": "Navigateur Web"
+      "description": "Navigateur"
+    },
+    "fr-FR": {
+      "name": "Navigateur",
+      "description": "Navigateur"
+    },
+    "hi": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "hr-HR": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "hu-HU": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "id": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "it-IT": {
+      "name": "Browser",
+      "description": "Browser"
     },
     "ja-JP": {
       "name": "ブラウザ",
-      "description": "ブラウザ"
+      "description": "ブラウザ",
+      "developer": {
+        "name": "Panasonic"
+      }
+    },
+    "lt-LT": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "lv-LV": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "nl-NL": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "no-NO": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "pl-PL": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "pt-BR": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "pt-PT": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "ro-RO": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "ru-RU": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "ru": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "sk-SK": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "sl-SI": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "sr-YU": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "sv-SE": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "th": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "tr-TR": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "vi": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "zh-CN": {
+      "name": "Browser",
+      "description": "Browser"
+    },
+    "zh-HK": {
+      "name": "Browser",
+      "description": "Browser"
     },
     "zh-TW": {
-      "name": "網路瀏覽器",
-      "description": "網路瀏覽器"
+      "name": "Browser",
+      "description": "Browser"
     }
+  },
+  "developer": {
+    "name": "Panasonic"
   },
   "default_locale": "en-US",
   "icons": {
@@ -45,6 +234,12 @@
         "url": {
           "required":true, "pattern":"https?:.{1,16384}", "patternFlags":"i"
         }
+      }
+    },
+    "pana_apps_launch":{
+      "href": "/index.html",
+      "filters":{
+        "productid": "0077777700160002"
       }
     }
   },
@@ -63,5 +258,197 @@
       "description": "connection for opening webpage",
       "rules": {}
     }
-  }
+  },
+  "origin": "app://0077777700160002.myhomescreen.tv",
+  "messages": [
+     { "asr-event": "/index.html" }
+  ],
+  "panasonic_extension" : {
+    "productid": "0077777700160002",
+    "disclaimer": false,
+    "latest_check": false,
+    "restricted": false,
+    "lockable": true,
+    "resumable": true,
+    "asr_dic":"browser",
+    "removable": false,
+    "input_device_settings": {
+      "mouse": "enable",
+      "touchpad": "mouse",
+      "remote_arrow_key": "mouse",
+      "keyboard_arrow_key": "arrow-key"
+    },
+    "dial_protocol" : {
+      "dial_name": "",
+      "dial_allow_stop": false,
+      "dial_state_recognizable": false,
+      "arg_type": "json"
+    }
+  },
+  "widgets": {
+    "mywidget1": {
+      "name": "Web Clip",
+      "launch_path": "/widget.html",
+      "description": "This is Browser widget",
+      "preview_image": "style/webclip/preview_image.png",
+      "tv_widget":{
+      "layout": "vertical"
+      },
+      "locales": {
+        "ar": {
+          "name": "ويب كليب"
+        },
+        "bg-BG": {
+          "name": "Уебклип"
+        },
+        "cs-CZ": {
+          "name": "Web. klip"
+        },
+        "da-DK": {
+          "name": "Webklip"
+        },
+        "de-DE": {
+          "name": "Web Clip"
+        },
+        "el-GR": {
+          "name": "Κλιπ ιστού"
+        },
+        "en-AU": {
+          "name": "Web Clip"
+        },
+        "en-BR": {
+          "name": "Web Clip"
+        },
+        "en-GB": {
+          "name": "Web Clip"
+        },
+        "en-HK": {
+          "name": "Web Clip"
+        },
+        "en-IE": {
+          "name": "Web Clip"
+        },
+        "en-TW": {
+          "name": "Web Clip"
+        },
+        "en-US": {
+          "name": "Web Clip"
+        },
+        "es-BR": {
+          "name": "Web Clip"
+        },
+        "es-ES": {
+          "name": "Web Clip"
+        },
+        "es-US": {
+          "name": "Web Clip"
+        },
+        "et-EE": {
+          "name": "Veebiklipp"
+        },
+        "fa": {
+          "name": "نمآهنگ وب"
+        },
+        "fi-FI": {
+          "name": "Nettileike"
+        },
+        "fr-CA": {
+          "name": "Clip Web"
+        },
+        "fr-FR": {
+          "name": "Clip Web"
+        },
+        "he": {
+          "name": "קליפ"
+        },
+        "hi": {
+          "name": "वैब क्लिप"
+        },
+        "hr-HR": {
+          "name": "Web isječ."
+        },
+        "hu-HU": {
+          "name": "Webes klip"
+        },
+        "id": {
+          "name": "Klip Web"
+        },
+        "it-IT": {
+          "name": "Clip Web"
+        },
+        "ja-JP": {
+          "name": "ブックマーク"
+        },
+        "lt-LT": {
+          "name": "„Web Clip“"
+        },
+        "lv-LV": {
+          "name": "Tīm. klips"
+        },
+        "mk-MK": {
+          "name": "Веб-клип"
+        },
+        "my": {
+          "name": "ဝက်ဘ်ကလစ်"
+        },
+        "nl-NL": {
+          "name": "Webclip"
+        },
+        "no-NO": {
+          "name": "Web-klipp"
+        },
+        "pl-PL": {
+          "name": "Klip siec."
+        },
+        "pt-BR": {
+          "name": "Clipe web"
+        },
+        "pt-PT": {
+          "name": "Web Clip"
+        },
+        "ro-RO": {
+          "name": "Web Clip"
+        },
+        "ru-RU": {
+          "name": "Веб-клип"
+        },
+        "ru": {
+          "name": "Веб-клип"
+        },
+        "sk-SK": {
+          "name": "Web klip"
+        },
+        "sl-SI": {
+          "name": "Spletni video"
+        },
+        "sr-YU": {
+          "name": "Veb klip"
+        },
+        "sv-SE": {
+          "name": "Webbklipp"
+        },
+        "th": {
+          "name": "เว็บคลิป"
+        },
+        "tr-TR": {
+          "name": "Web Klibi"
+        },
+        "vi": {
+          "name": "Web Clip"
+        },
+        "zh-CN": {
+          "name": "Web 剪辑"
+        },
+        "zh-HK": {
+          "name": "Web 剪輯"
+        },
+        "zh-TW": {
+          "name": "網頁擷取"
+        }
+      }
+    }
+  },
+  "widgetPages": [
+     "/widget.html"
+  ]
 }

@@ -751,6 +751,9 @@ input::-moz-focus-inner {
 #menu-block li:last-child {
   /* border-bottom: 0px; */
 }
+#ifilter-block.disable {
+  display: none !important;
+}
 
 #menu-block li:hover {
   height: 9.2rem;

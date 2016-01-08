@@ -121,6 +121,8 @@ var Toolbar = {
       this.clickPocketListBlock.bind(this));
     this.privateWindowBlock.addEventListener('mouseup',
         Browser.handlePrivateBrowsing.bind(Browser));
+    this.ifilterBlock.addEventListener('mouseup',
+        Ifilter.show.bind(Ifilter));
     this.settingsBlock.addEventListener('mouseup',
         Settings.show.bind(Settings));
 
@@ -137,8 +139,15 @@ var Toolbar = {
     this.tabsButtonBlock.dataset.colorbar = colorBar[2].COLOR;
     this.newTabButtonBlock.dataset.colorbar = colorBar[3].COLOR;
 
-    // li = 73px * 3(list) + 20px(hover) + 10px(padding)
-    this.menuBlock.style.height = 73 * 3 + 20 + 10 + 'px';
+    // ifilter is only supported Japan.
+    if(Browser.country != 'JP') {
+      this.ifilterBlock.classList.add('disable');
+      // li = 73px * 3(list) + 20px(hover) + 10px(padding)
+      this.menuBlock.style.height = 73 * 3 + 20 + 10 + 'px';
+    } else {
+      // li = 73px * 4(list) + 20px(hover) + 10px(padding)
+      this.menuBlock.style.height = 73 * 4 + 20 + 10 + 'px';
+    }
     Tooltip.init();
 
 //IFDEF_FIREFOX_SYNC
@@ -204,9 +213,8 @@ var Toolbar = {
       'new-tab-button-block', 'new-tab-button',
       'menu-button-block', 'menu-button',
       'menu-block',
-      'history-block', 'private-window-block',
-      'settings-block',
-      'history-tab', 'private-window-tab', 'settings-tab',
+      'history-block', 'private-window-block', 'ifilter-block', 'settings-block',
+      'history-tab', 'private-window-tab', 'ifilter-tab', 'settings-tab',
       'mode-button-block',
       'mode-button-title', 'pan-cursor-button', 'pan-cursor-button-block',
       'pan-cursor-banner-message',
@@ -309,6 +317,13 @@ var Toolbar = {
     Browser.fadeBase.addEventListener('transitionend', fade_event, false);
     Browser.fadeBase.classList.toggle('fade');
     this.sidebarButtonBlock.dataset.fade='true';
+
+    if(Browser.sideBlock.dataset.sidebar == 'true'){
+      var video = document.getElementById('tv');
+      video.mozSrcObject = null;
+    }else{
+      Browser.initTV();
+    }
   },
 
   /**
@@ -618,7 +633,9 @@ var Toolbar = {
         ar.push(432); // default 432(540 / 1.25)
         ar.push(this.historyTab.offsetWidth);
         ar.push(this.privateWindowTab.offsetWidth);
-
+        if(Browser.country == 'JP') {
+          ar.push(this.ifilterTab.offsetWidth);
+        }
         ar.push(this.settingsTab.offsetWidth);
         this.menuBlock.style.minWidth =
           (Math.max.apply(null, ar) * 1.25) + 'px';
@@ -679,6 +696,7 @@ var Toolbar = {
     if(Browser.getCursorPanMode() == 'cursor') {
       Browser.setCursorPanMode('pan');
       this.modeButtonTitle.innerHTML = _('WB_LT_PAN_MODE');
+      window.navigator.panaInputDeviceSetting.setDragMode('on');
       this.panCursorBannerMessage.innerHTML = _('WB_LT_SWITCH_PAN_MODE');
     } else {
       this.clearDragMode();
@@ -694,6 +712,7 @@ var Toolbar = {
     if(Browser.getCursorPanMode() == 'pan') {
       Browser.setCursorPanMode('cursor');
       this.modeButtonTitle.innerHTML = _('WB_LT_CURSOR_MODE');
+      window.navigator.panaInputDeviceSetting.setDragMode('off');
       this.panCursorBannerMessage.innerHTML = _('WB_LT_SWITCH_CURSOR_MODE');
     }
   },

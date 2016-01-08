@@ -17,7 +17,7 @@
  * @namespace Settings
  */
 var Settings = {
-  DEFAULT_HOMEPAGE: 'http://www.mozilla.org',
+  DEFAULT_HOMEPAGE: 'http://www.panasonic.com',
   currentSearchEngine: null,
   selectSearchEngine: null,
   searchEngineList: null,
